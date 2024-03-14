@@ -4,7 +4,7 @@ from mininet.net import Mininet
 from mininet.node import Controller, RemoteController, OVSController
 from mininet.node import CPULimitedHost, Host, Node
 #from mininet.node import OVSKernelSwitch, UserSwitch
-from mininet.node import IVSSwitch
+#from mininet.node import IVSSwitch
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
@@ -34,21 +34,19 @@ def smartGridSimNetwork():
     #protocol='tcp',
     #port=6633)
 
-
-    switchType = eBPFSwitch; 
     switchPath = "../../BPFabric/softswitch/softswitch"; 
     #switchType = OVSKernelSwitch; 
 
     info( '*** Starting networking devices\n')
-    DSS1GW = net.addSwitch('DSS1GW', switchType=switchType, dpid=1, switch_path=switchPath) #failMode='standalone'    
-    DSS2GW = net.addSwitch('DSS2GW', dpid=2, switch_path=switchPath, switchType=switchType) #,failMode='standalone')    
-    WANR1 = net.addSwitch('WANR1', dpid=3,switch_path=switchPath) #,failMode='standalone')
-    WANR2 = net.addSwitch('WANR2', dpid=4, switch_path=switchPath) #,failMode='standalone') 
-    CONTROLSW = net.addSwitch('CONTROLSW', dpid=5, switch_path=switchPath) #,failMode='standalone') 
-    DPSGW = net.addSwitch('DPSGW', dpid=6, switch_path=switchPath) #,failMode='standalone') 
-    DPSRS = net.addSwitch('DPSRS', dpid=7, switch_path=switchPath) #,failMode='standalone') 
-    DPSHV = net.addSwitch('DPSHV', dpid=8, switch_path=switchPath) #,failMode='standalone') 
-    DPSMV = net.addSwitch('DPSMV', dpid=9, switch_path=switchPath) #,failMode='standalone') 
+    DSS1GW = net.addSwitch('DSS1GW', dpid=1, switch_path=switchPath)     
+    DSS2GW = net.addSwitch('DSS2GW', dpid=2, switch_path=switchPath)  
+    WANR1 = net.addSwitch('WANR1', dpid=3,switch_path=switchPath) 
+    WANR2 = net.addSwitch('WANR2', dpid=4, switch_path=switchPath) 
+    CONTROLSW = net.addSwitch('CONTROLSW', dpid=5, switch_path=switchPath)  
+    DPSGW = net.addSwitch('DPSGW', dpid=6, switch_path=switchPath) 
+    DPSRS = net.addSwitch('DPSRS', dpid=7, switch_path=switchPath) 
+    DPSHV = net.addSwitch('DPSHV', dpid=8, switch_path=switchPath) 
+    DPSMV = net.addSwitch('DPSMV', dpid=9, switch_path=switchPath) 
 
     info( '*** Starting external connection\n')
     #DSS1ASW = net.addSwitch('DSS1ASW', dpid=10, switch_path=switchPath) #,failMode='standalone') 
@@ -146,11 +144,11 @@ def sgsim_startcom_goose(self, line):
     info('Starting GOOSE communication... \n')    
     net.get('IED1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "IED1-GOOSE" -e "cd ../comlib_dps/sgdevices/IED_GOOSE/;./ied_goose IED1-eth0;bash"&') 
     time.sleep(0.5)
-    #net.get('IED4').cmdPrint('xterm -geometry 90x30+30+30 -fa "Monospace" -fs 12 -T "IED4-GOOSE" -e "cd ../comlib_dps/sgdevices/IED_GOOSE/;./ied_goose IED4-eth0;bash"&') 
-    #time.sleep(0.5)
+    net.get('IED4').cmdPrint('xterm -geometry 90x30+30+30 -fa "Monospace" -fs 12 -T "IED4-GOOSE" -e "cd ../comlib_dps/sgdevices/IED_GOOSE/;./ied_goose IED4-eth0;bash"&') 
+    time.sleep(0.5)
     net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+50+50 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-1" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi 1;bash"&') 
-    #time.sleep(0.5)
-    #net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd /home/sgsim/SmartGridSim/comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi 4;bash"&') 
+    time.sleep(0.5)
+    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd /home/sgsim/SmartGridSim/comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi 4;bash"&') 
 
 def sgsim_startcom_sglab_goose(self, line):
     "Starts the GOOSE communication according to the SG LAB data." 
