@@ -4,7 +4,7 @@ Contains glue files to make BPFabric work with SGSim.
 Requires current version of BPFabric and SGSim.  
 
 # TODO
-Verify mirroring functionality in all scenarios. 
+Verify mirroring functionality in all scenarios.   
 Asset discovery service. 
 
 # Topology 
