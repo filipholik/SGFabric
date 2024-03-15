@@ -1,7 +1,10 @@
 # SGFabric
-Modified files from BPFabric and SGSim to build working Smart Grid network orchestrated by BPFabric.   
+Modified files from BPFabric and SGSim to build emulated Smart Grid network orchestrated by BPFabric.   
 Contains glue files to make BPFabric work with SGSim.   
 Requires current version of BPFabric and SGSim.  
+
+Usage: add / replace corresponding files in BPFabric and SGSim.  
+
 
 # TODO
 Verify mirroring functionality in all scenarios.   
