@@ -4,4 +4,4 @@ Contains glue files to make BPFabric work with SGSim.
 Requires current version of BPFabric and SGSim.
 
 # Topology 
-
+![SGFabric topology]([image link](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
