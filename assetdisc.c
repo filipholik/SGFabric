@@ -22,14 +22,14 @@ uint64_t prog(struct packet *pkt)
 
     if(pkt->eth.h_proto == 47240) //GOOSE = 0x88B8 (LittleE) -> B888 (BigE) = 47240 
     {
-        bpf_debug(1);
+        //bpf_debug(1);
 
         if (bpf_map_lookup_elem(&assetdisc, pkt->eth.h_source, &item) == -1)
-	{
-	    struct countentry newitem = {
-		    .bytes = 0,
-		    .packets = 0,
-	    };
+	    {
+            struct countentry newitem = {
+                .bytes = 0,
+                .packets = 0,
+            };
 
             bpf_map_update_elem(&assetdisc, pkt->eth.h_source, &newitem, 0);
             item = &newitem;
@@ -38,6 +38,7 @@ uint64_t prog(struct packet *pkt)
     item->packets++;
     item->bytes += pkt->metadata.length;
        
+    bpf_notify(0, pkt->eth.h_source, sizeof(pkt->eth.h_source));
     }    
 
     return NEXT;
