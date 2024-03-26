@@ -20,7 +20,7 @@ uint64_t prog(struct packet *pkt)
 {
     struct countentry *item;
 
-    if(pkt->eth.h_source == '000000000008') //TODO fix this! 
+    if(pkt->eth.h_proto == 47240) //GOOSE = 0x88B8 (LittleE) -> B888 (BigE) = 47240 
     {
         bpf_debug(1);
 
