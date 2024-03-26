@@ -187,18 +187,31 @@ class MainCLI(cmd.Cmd):
                 self.application.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSRS
                 self.application.connections[8].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSHV
                 self.application.connections[9].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
-                print("All forwarding services installed...")
-                time.sleep(0.5)                
+                time.sleep(1)    
+                print("All forwarding services installed...")            
 
             with open('../examples/mirror.o', 'rb') as f:
                 print("Installing mirroring service...")
-                elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
+                elf = f.read() 
                 self.application.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
-                
+                time.sleep(1)
                 print("Mirroring service installed...")
-                time.sleep(0.5)
 
-            
+            with open('../examples/block.o', 'rb') as f:
+                print("Installing ACL service...")
+                elf = f.read() 
+                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf)) # DSS1                
+                time.sleep(1)
+                print("ACL service installed...")                
+
+            with open('../examples/assetdisc.o', 'rb') as f:
+                print("Installing Asset Discovery service...")
+                elf = f.read() 
+                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) # DSS1                
+                time.sleep(1)
+                print("ACL service installed...")              
+
+            time.sleep(1)
             print("All functions installed...")
         else: 
             print(f'Could not verify connected devices. ')
@@ -254,9 +267,16 @@ class eBPFCLIApplication(eBPFCoreApplication):
         tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
 
     @set_event_handler(Header.NOTIFY)
-    def notify_event(self, connection, pkt):
-        print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
-        print(pkt.data.hex())
+    def notify_event(self, connection, pkt):        
+        #print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
+        #print(pkt.data.hex())
+        vendor = ''
+        if pkt.data.hex() == '30b216000004':
+            vendor = 'Hitachi'
+        if pkt.data.hex() == 'b4b15a000001':
+            vendor = 'Siemens'  
+        print(f'\n[{connection.dpid}] GOOSE device detected with MAC: {pkt.data.hex()} ({vendor})')
+
 
     @set_event_handler(Header.PACKET_IN)
     def packet_in(self, connection, pkt):
