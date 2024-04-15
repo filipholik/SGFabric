@@ -179,7 +179,7 @@ class MainCLI(cmd.Cmd):
                 print("Installing forwarding services...")
                 elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
                 self.application.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
-                self.application.connections[2].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1
+                self.application.connections[2].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS2
                 self.application.connections[3].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
                 self.application.connections[4].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
                 self.application.connections[5].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
@@ -200,14 +200,17 @@ class MainCLI(cmd.Cmd):
             with open('../examples/block.o', 'rb') as f:
                 print("Installing ACL service...")
                 elf = f.read() 
-                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf)) # DSS1                
+                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf)) #                 
                 time.sleep(1)
                 print("ACL service installed...")                
 
             with open('../examples/assetdisc.o', 'rb') as f:
                 print("Installing Asset Discovery service...")
                 elf = f.read() 
-                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) # DSS1                
+                self.application.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #   
+                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #
+                self.application.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #
+                self.application.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #              
                 time.sleep(1)
                 print("ACL service installed...")              
 
@@ -275,7 +278,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
             vendor = 'Hitachi'
         if pkt.data.hex() == 'b4b15a000001':
             vendor = 'Siemens'  
-        print(f'\n[{connection.dpid}] GOOSE device detected with MAC: {pkt.data.hex()} ({vendor})')
+        print(f'\n[{connection.dpid}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
 
 
     @set_event_handler(Header.PACKET_IN)
