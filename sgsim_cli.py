@@ -200,17 +200,17 @@ class MainCLI(cmd.Cmd):
             with open('../examples/block.o', 'rb') as f:
                 print("Installing ACL service...")
                 elf = f.read() 
-                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf)) #                 
+                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf))                 
                 time.sleep(1)
                 print("ACL service installed...")                
 
             with open('../examples/assetdisc.o', 'rb') as f:
                 print("Installing Asset Discovery service...")
                 elf = f.read() 
-                self.application.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #   
-                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #
-                self.application.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #
-                self.application.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf)) #              
+                self.application.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
+                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
+                self.application.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
+                self.application.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
                 time.sleep(1)
                 print("ACL service installed...")              
 
@@ -278,7 +278,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
             vendor = 'Hitachi'
         if pkt.data.hex() == 'b4b15a000001':
             vendor = 'Siemens'  
-        print(f'\n[{connection.dpid}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
+        print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
 
 
     @set_event_handler(Header.PACKET_IN)
@@ -305,5 +305,29 @@ class eBPFCLIApplication(eBPFCoreApplication):
         else:
             print("Function has been removed")
 
+    def get_switch_name(dpid): 
+        switch_name = ""; 
+        match dpid: 
+            case 1: 
+                switch_name = "DSS1 GW"
+            case 2: 
+                switch_name = "DSS2 GW"
+            case 3: 
+                switch_name = "WAN R1"
+            case 4: 
+                switch_name = "WAN R2"
+            case 5: 
+                switch_name = "CONTROL SW"
+            case 6: 
+                switch_name = "DPS GW"
+            case 7: 
+                switch_name = "DPS RS"
+            case 8: 
+                switch_name = "DPS HV"
+            case 9: 
+                switch_name = "DPS MV"
+            case _:
+                switch_name = "unknown"   
+        return switch_name
 if __name__ == '__main__':
     eBPFCLIApplication().run()
