@@ -4,7 +4,7 @@ Contains glue files to make BPFabric work with SGSim.
 Requires current version of BPFabric and SGSim.  
 
 # TODO
-Verify mirroring functionality in all scenarios.   
+Create a storage on the controller for caching content of eBPF maps.    
 
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
