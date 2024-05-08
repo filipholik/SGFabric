@@ -14,4 +14,4 @@ Add / replace corresponding files in BPFabric and SGSim.
 
 Printing maps tables:  
 8 table 0 list   
-8 table 0 trafficcount list  
+8 table 0 assetdisc list  
