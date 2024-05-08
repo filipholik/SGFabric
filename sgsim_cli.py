@@ -225,11 +225,17 @@ class MainCLI(cmd.Cmd):
     # def do_EOF(self, line):
     #     return True
 
+class tablesCache():
+    tablesDict = {} # DPID, Table 
+
 class eBPFCLIApplication(eBPFCoreApplication):
     """
         Controller application that will start a interactive CLI.
     """
+    assetDiscoveryCache = tablesCache() 
+
     def run(self):
+        
         Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
 
         try:
@@ -245,6 +251,10 @@ class eBPFCLIApplication(eBPFCoreApplication):
 
     @set_event_handler(Header.TABLE_LIST_REPLY)
     def table_list_reply(self, connection, pkt):
+        if pkt.entry.table_name == "assetdisc":
+            self.asset_disc_list(connection.dpid, pkt) # Collecting data for Asset Discovery service 
+            return 
+    
         entries = []
 
         if pkt.entry.table_type in [TableDefinition.HASH, TableDefinition.LPM_TRIE]:
@@ -269,6 +279,21 @@ class eBPFCLIApplication(eBPFCoreApplication):
     def table_entry_get_reply(self, connection, pkt):
         tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
 
+    def asset_disc_list(self, dpid, pkt):
+        os.system('clear')
+        entries = []
+        
+        item_size = pkt.entry.key_size + pkt.entry.value_size
+        fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
+
+        for i in range(pkt.n_items):
+            key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
+            entries.append((key.hex(), value.hex()))        
+
+        self.assetDiscoveryCache.tablesDict[""] = entries 
+        print("Table logged")
+        #tabulate(entries, headers=["Key", "Value"])
+    
     @set_event_handler(Header.NOTIFY)
     def notify_event(self, connection, pkt):        
         #print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
@@ -278,7 +303,8 @@ class eBPFCLIApplication(eBPFCoreApplication):
             vendor = 'Hitachi'
         if pkt.data.hex() == 'b4b15a000001':
             vendor = 'Siemens'  
-        print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
+        #print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
+        connection.send(TableListRequest(index=0, table_name="assetdisc"))
 
 
     @set_event_handler(Header.PACKET_IN)
@@ -329,5 +355,6 @@ class eBPFCLIApplication(eBPFCoreApplication):
             case _:
                 switch_name = "unknown"   
         return switch_name
+
 if __name__ == '__main__':
     eBPFCLIApplication().run()
