@@ -39,15 +39,20 @@
                     </div>
                 </div>
                 <div class="col-md-6 col-xl-3">
-                    <div class="card bg-c-yellow order-card">
+                    <div class="card 
+                    {% if connected_devices > 0 %} bg-c-green  {% else %}  bg-c-yellow {% endif %}                       
+                    order-card">
                         <div class="card-body">
                             <h6 class="text-white">Nodes Control</h6>
                             <h2 class="text-end text-white"><i class="feather icon-shuffle float-start"></i><span>
-                                <a href="http://172.17.0.1:5000/start" class="btn btn-primary btn-sm btn-round">Connect</a>
+                                <a href="http://172.17.0.1:5000/start" class="btn btn-primary btn-sm btn-round 
+                                {% if connected_devices > 0 %} disabled {% endif %}            
+                                ">Connect</a>
                             </span>
                             </h2>
                             <p class="m-b-0">
-                                Try to connect to the nodes in the network.  
+                                {% if connected_devices > 0 %} Nodes connected.  {% else %}  Try to connect to the nodes in the network. {% endif %}  
+                                  
                             </p>
                         </div>
                     </div>
