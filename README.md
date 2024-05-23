@@ -1,7 +1,10 @@
 # SGFabric
-Modified files from BPFabric and SGSim to build emulated Smart Grid network orchestrated by BPFabric.   
-Contains glue files to make BPFabric work with SGSim.   
+Modified files from SGSim and BPFabric to build an emulated Smart Grid network controlled by eBPF functions.    
+Contains glue files which have to be added to SGSim and BPFabric (or have to replace original files).    
+
+# Requirements
 Requires current version of BPFabric and SGSim.  
+Dashboard requires Gradient Able Flask. 
 
 # TODO
 Create a storage on the controller for caching content of eBPF maps.    
