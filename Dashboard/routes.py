@@ -23,8 +23,9 @@ def index():
         data = reply.json()
         print("Code: " + str(reply.status_code))     
         if reply.status_code == 200: 
-            context["connected_devices"] = len(data)
+            context["connected_devices"] = len(data["connected_devices"])
             context["csp"] = "Connected"
+            context["log"] = data["log"]
         else:
             context["connected_devices"] = 0
     except requests.RequestException as e:
