@@ -23,7 +23,10 @@
                             <h6 class="text-white">Service Provider Status</h6>
                             <h2 class="text-end text-white"><i class="feather icon-eye float-start"></i><span>{{csp}}</span>
                             </h2>
-                            <p class="m-b-0">Running on 172.17.0.1<span class="float-end"></span></p>
+                            <p class="m-b-0">
+                                {% if csp == 'Connected' %} Running on 172.17.0.1:5000  {% else %}  Could not contact the service provider {% endif %} 
+                                
+                                <span class="float-end"></span></p>
                         </div>
                     </div>
                 </div>
@@ -40,18 +43,18 @@
                 </div>
                 <div class="col-md-6 col-xl-3">
                     <div class="card 
-                    {% if connected_devices > 0 %} bg-c-green  {% else %}  bg-c-yellow {% endif %}                       
+                    {% if connected_devices and connected_devices > 0 %} bg-c-green  {% else %}  bg-c-yellow {% endif %}                       
                     order-card">
                         <div class="card-body">
                             <h6 class="text-white">Nodes Control</h6>
                             <h2 class="text-end text-white"><i class="feather icon-shuffle float-start"></i><span>
                                 <a href="http://172.17.0.1:5000/start" class="btn btn-primary btn-sm btn-round 
-                                {% if connected_devices > 0 %} disabled {% endif %}            
+                                {% if connected_devices and connected_devices > 0 %} disabled {% endif %}            
                                 ">Connect</a>
                             </span>
                             </h2>
                             <p class="m-b-0">
-                                {% if connected_devices > 0 %} Nodes connected.  {% else %}  Try to connect to the nodes in the network. {% endif %}  
+                                {% if connected_devices and connected_devices > 0 %} Nodes connected.  {% else %}  Try to connect to the nodes in the network. {% endif %}  
                                   
                             </p>
                         </div>
@@ -544,6 +547,43 @@
                                 </div>
                             </div>
                             <!-- Customer overview end -->
+
+            				<div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Log</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if log %} {{log}}   {% else %}  No log data {% endif %} 
+                                        <!--
+                                        <h1>This is a Heading 1</h1>
+                                        <p class="text-muted mb-4">Suspendisse vel quam malesuada, aliquet sem sit amet, fringilla elit. Morbi tempor tincidunt tempor. Etiam id turpis viverra, vulputate sapien nec, varius sem. Curabitur
+                                            ullamcorper fringilla eleifend. In ut eros hendrerit est consequat posuere et at velit.</p>
+                                        <div class="clearfix"></div>
+                                        <h2>This is a Heading 2</h2>
+                                        <p class="text-muted mb-4">In nec rhoncus eros. Vestibulum eu mattis nisl. Quisque viverra viverra magna nec pulvinar. Maecenas pellentesque porta augue, consectetur facilisis diam porttitor sed.
+                                            Suspendisse tempor est sodales augue rutrum tincidunt. Quisque a malesuada purus.</p>
+                                        <div class="clearfix"></div>
+                                        <h3>This is a Heading 3</h3>
+                                        <p class="text-muted mb-4">Vestibulum auctor tincidunt semper. Phasellus ut vulputate lacus. Suspendisse ultricies mi eros, sit amet tempor nulla varius sed. Proin nisl nisi, feugiat quis bibendum vitae,
+                                            dapibus in tellus.</p>
+                                        <div class="clearfix"></div>
+                                        <h4>This is a Heading 4</h4>
+                                        <p class="text-muted mb-4">Nulla et mattis nunc. Curabitur scelerisque commodo condimentum. Mauris blandit, velit a consectetur egestas, diam arcu fermentum justo, eget ultrices arcu eros vel erat.</p>
+                                        <div class="clearfix"></div>
+                                        <h5>This is a Heading 5</h5>
+                                        <p class="text-muted mb-4">Quisque nec turpis at urna dictum luctus. Suspendisse convallis dignissim eros at volutpat. In egestas mattis dui. Aliquam mattis dictum aliquet. Nulla sapien mauris, eleifend et
+                                            sem ac, commodo dapibus odio. Vivamus pretium nec odio cursus elementum. Suspendisse molestie ullamcorper ornare.
+                                        </p>
+                                        <div class="clearfix"></div>
+                                        <h6>This is a Heading 6</h6>
+                                        <p class="text-muted mb-0">Donec ultricies, lacus id tempor condimentum, orci leo faucibus sem, a molestie libero lectus ac justo. ultricies mi eros, sit amet tempor nulla varius sed. Proin nisl nisi,
+                                            feugiat quis bibendum vitae, dapibus in tellus.
+                                        </p>
+                                        -->
+                                    </div>
+                                </div>
+                            </div>
 
             <div class="row">
                 <div class="col-md-12 col-xl-6">
