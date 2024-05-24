@@ -10,6 +10,8 @@ from flask import Flask, request, jsonify
 import json 
 import time
 
+import datetime
+
 app = Flask(__name__)
 #global eBPFApp
 
@@ -18,6 +20,7 @@ class storage():
     connections = {}
     status = {"status" : "Unknown"}
     cache = {}
+    log = {} 
     eBPFApp = None
 
 class eBPFCLIApplication(eBPFCoreApplication):
@@ -100,9 +103,12 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #return json.dumps(list(storage.connected_devices))
     
     def install(self): 
+        log = ""
         print(f'Installing SGSim orchestration functions...')
+        log += f'Installing SGSim orchestration functions...' 
         if(len(self.application.connections) == 9): 
             print(f'All networking device connected. ')
+            log += f'All networking device connected. '
             with open('../examples/learningswitch.o', 'rb') as f:
                 print("Installing forwarding services...")
                 elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
@@ -148,6 +154,8 @@ class eBPFCLIApplication(eBPFCoreApplication):
         else: 
             print(f'Could not verify connected devices. ')
             storage.status["functions"] = ("Functions not installed")
+        
+        storage.log[str(datetime.datetime.now())] = log 
 
     @set_event_handler(Header.NOTIFY)
     def notify_event(self, connection, pkt):        
@@ -193,6 +201,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         if connection.dpid not in storage.connected_devices: 
             storage.connected_devices.add(connection.dpid)
         storage.connections[connection.dpid] = connection
+        storage.log[str(datetime.datetime.now())] = "New node connected: " + str(connection.dpid)
         print("New device connected")
 
 
@@ -230,10 +239,17 @@ def start():
 
 @app.get("/status")
 def get_status():    
-    return json.dumps(list(storage.connected_devices))
+    print(storage.log)
+    return json.dumps({"connected_devices" : list(storage.connected_devices), 
+                       "log" : storage.log
+                       })
     #return len(storage.connected_devices)
     #return {"Connected devices: ": len(storage.connected_devices)}
     #return storage.status 
+
+@app.get("/ad")
+def refresh_asset_discovery():    
+    return json.dumps(list(storage.connected_devices))
 
 @app.get("/install")
 def install_functions():    
