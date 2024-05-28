@@ -2,6 +2,7 @@
 
 from core import eBPFCoreApplication, set_event_handler, FLOOD
 from core.packets import *
+import struct
 
 from threading import Thread
 from twisted.internet import reactor
@@ -20,7 +21,8 @@ class storage():
     connections = {}
     status = {"status" : "Unknown"}
     cache = {}
-    log = {} 
+    log = {str(datetime.datetime.now()): "Service Provider started"}
+    asset_discovery = {} # dpid: mac : bytes : packets
     eBPFApp = None
 
 class eBPFCLIApplication(eBPFCoreApplication):
@@ -32,6 +34,31 @@ class eBPFCLIApplication(eBPFCoreApplication):
     def run(self):        
         Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
         #return self
+
+    def get_switch_name(dpid): 
+        switch_name = ""; 
+        match dpid: 
+            case 1: 
+                switch_name = "DSS1 GW"
+            case 2: 
+                switch_name = "DSS2 GW"
+            case 3: 
+                switch_name = "WAN R1"
+            case 4: 
+                switch_name = "WAN R2"
+            case 5: 
+                switch_name = "CONTROL SW"
+            case 6: 
+                switch_name = "DPS GW"
+            case 7: 
+                switch_name = "DPS RS"
+            case 8: 
+                switch_name = "DPS HV"
+            case 9: 
+                switch_name = "DPS MV"
+            case _:
+                switch_name = "unknown"   
+        return switch_name
 
     @set_event_handler(Header.TABLES_LIST_REPLY)
     def tables_list_reply(self, connection, pkt):
@@ -70,31 +97,27 @@ class eBPFCLIApplication(eBPFCoreApplication):
         print()
 
     def asset_disc_list(self, dpid, pkt):
-        os.system('clear')
-        entries = []
+        #os.system('clear')
+        #entries = []
+        entries = {}
+        packets = {}
         
         item_size = pkt.entry.key_size + pkt.entry.value_size
         fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
 
         for i in range(pkt.n_items):
             key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
-            entries.append((key.hex(), value.hex()))        
-
-        self.assetDiscoveryCache.tablesDict[""] = entries 
+            #entries.append((key.hex(), value.hex()))   
+            entries = {str(key.hex()) : str(value.hex())}
+            packets[i] = entries
+            #storage.asset_discovery[str(key.hex())] = str(value.hex())    
+            
+        storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
+        print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
+        
+        #self.assetDiscoveryCache.tablesDict[""] = entries 
         print("Table logged")
         #tabulate(entries, headers=["Key", "Value"])
-
-        headers = {
-            'Content-Type': 'application/json'            
-        }
-
-        payload = {
-            'name': 'John Doe',
-            'email': 'john.doe@example.com'
-        }
-
-        response = requests.post('http://127.0.0.1:5000/tab', headers=headers, data=json.dumps(entries)) 
-        print(response.json())
 
     #@app.get("/install")
     #def install_functions():    
@@ -102,13 +125,14 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #return '<h2> Installing functions to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
         #return json.dumps(list(storage.connected_devices))
     
+    # NOT USED!
     def install(self): 
         log = ""
         print(f'Installing SGSim orchestration functions...')
-        log += f'Installing SGSim orchestration functions...' 
+        log += 'Installing SGSim orchestration functions... \n' 
         if(len(self.application.connections) == 9): 
             print(f'All networking device connected. ')
-            log += f'All networking device connected. '
+            log += f'All networking device connected. \n'
             with open('../examples/learningswitch.o', 'rb') as f:
                 print("Installing forwarding services...")
                 elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
@@ -156,6 +180,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
             storage.status["functions"] = ("Functions not installed")
         
         storage.log[str(datetime.datetime.now())] = log 
+        storage.log[str(datetime.datetime.now())] = "All functions installed. "
 
     @set_event_handler(Header.NOTIFY)
     def notify_event(self, connection, pkt):        
@@ -204,44 +229,19 @@ class eBPFCLIApplication(eBPFCoreApplication):
         storage.log[str(datetime.datetime.now())] = "New node connected: " + str(connection.dpid)
         print("New device connected")
 
-
-    def get_switch_name(dpid): 
-        switch_name = ""; 
-        match dpid: 
-            case 1: 
-                switch_name = "DSS1 GW"
-            case 2: 
-                switch_name = "DSS2 GW"
-            case 3: 
-                switch_name = "WAN R1"
-            case 4: 
-                switch_name = "WAN R2"
-            case 5: 
-                switch_name = "CONTROL SW"
-            case 6: 
-                switch_name = "DPS GW"
-            case 7: 
-                switch_name = "DPS RS"
-            case 8: 
-                switch_name = "DPS HV"
-            case 9: 
-                switch_name = "DPS MV"
-            case _:
-                switch_name = "unknown"   
-        return switch_name
-
 @app.get("/start")
 def start():
     #Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
     storage.eBPFApp = eBPFCLIApplication().run()
-    storage.status["status"] = "Nodes connected"
+    storage.status["status"] = "Nodes connected"    
     return '<h2> Connecting to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
 
 @app.get("/status")
 def get_status():    
-    print(storage.log)
+    #print(storage.log)
     return json.dumps({"connected_devices" : list(storage.connected_devices), 
-                       "log" : storage.log
+                       "log" : storage.log, 
+                       "asset_discovery" : storage.asset_discovery
                        })
     #return len(storage.connected_devices)
     #return {"Connected devices: ": len(storage.connected_devices)}
@@ -256,10 +256,12 @@ def install_functions():
     #storage.eBPFApp.install()
     install()
     return '<h2> Installing functions to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
+    
     #return json.dumps(list(storage.connected_devices))
 
 def install(): 
     print(f'Installing SGSim orchestration functions...')
+    storage.log[str(datetime.datetime.now())] = "Installation of functions started"
     if(len(storage.connected_devices) == 9): 
         print(f'All networking device connected. ')
         with open('../examples/learningswitch.o', 'rb') as f:
@@ -305,9 +307,12 @@ def install():
         time.sleep(1)
         print("All functions installed...")
         storage.status["functions"] = ("Functions installed")
+        storage.log[str(datetime.datetime.now())] = "All functions installed sucessfully"
     else: 
         print(f'Could not verify connected devices. ')
         storage.status["functions"] = ("Functions not installed")
+        storage.log[str(datetime.datetime.now())] = "Functions installation failed"
+    
 
 #class LearningSwitchApplication(eBPFCoreApplication):
     #@set_event_handler(Header.HELLO)
