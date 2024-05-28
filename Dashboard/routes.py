@@ -26,6 +26,7 @@ def index():
             context["connected_devices"] = len(data["connected_devices"])
             context["csp"] = "Connected"
             context["log"] = data["log"]
+            context["asset_discovery"] = data["asset_discovery"]
         else:
             context["connected_devices"] = 0
     except requests.RequestException as e:
