@@ -59,6 +59,14 @@ class eBPFCLIApplication(eBPFCoreApplication):
             case _:
                 switch_name = "unknown"   
         return switch_name
+    
+    def get_str_values(value): 
+        #print(int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little")) # Bytes 
+        #print(int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")) # Packets 
+        value_bytes = int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little") 
+        value_packets = int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")
+        print(str(value_packets) + "," + str(value_bytes))
+        return str(value_packets) + "," + str(value_bytes)
 
     @set_event_handler(Header.TABLES_LIST_REPLY)
     def tables_list_reply(self, connection, pkt):
@@ -96,6 +104,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
         print()
 
+
     def asset_disc_list(self, dpid, pkt):
         #os.system('clear')
         #entries = []
@@ -108,12 +117,14 @@ class eBPFCLIApplication(eBPFCoreApplication):
         for i in range(pkt.n_items):
             key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
             #entries.append((key.hex(), value.hex()))   
-            entries = {str(key.hex()) : str(value.hex())}
+            entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
             packets[i] = entries
             #storage.asset_discovery[str(key.hex())] = str(value.hex())    
             
         storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
-        print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
+        #print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
+
+        
         
         #self.assetDiscoveryCache.tablesDict[""] = entries 
         print("Table logged")
