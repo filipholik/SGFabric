@@ -162,50 +162,30 @@
                                                             </thead>
                                                             <tbody>
                                                                 <tr>                                                                    
-                                                                        {% if asset_discovery and "DPS HV" in asset_discovery %} 
+                                                                        {% if AD_DPSHV %} 
                                                                         
-                                                                            {% for entry in asset_discovery["DPS HV"] %}
-                                                                                <tr> 
-                                                                                    {% for i in entry %}
-                                                                                        
-                                                                                        <!-- {% for key, value in asset_discovery["DPS HV"][i] %}
-
+                                                                            {% for entry in AD_DPSHV %}
+                                                                                {% for key in AD_DPSHV[entry].keys() %}
+                                                                                <tr>                                                                                                                                                                      
                                                                                             <td> 
-                                                                                                {{key}}
+                                                                                                {{key.upper()}}
                                                                                             </td> 
                                                                                             <td> 
                                                                                                 Siemens?
                                                                                             </td> 
                                                                                             <td> 
-                                                                                                {{value}}
+                                                                                                {{AD_DPSHV[entry][key]}}
                                                                                             </td> 
                                                                                             <td> 
-                                                                                                {{value}}
-                                                                                            </td> 
-
-                                                                                        {% endfor %}  -->
-
-                                                                                        {% for j in asset_discovery["DPS HV"][i] %}
-                                                                                        
-                                                                                            <td> 
-                                                                                                {{asset_discovery["DPS HV"][i]}}
-                                                                                            </td> 
-                                                                                            <td> 
-                                                                                                Siemens?
-                                                                                            </td> 
-                                                                                            <td> 
-                                                                                                {{asset_discovery["DPS HV"][i][j]}}
-                                                                                            </td> 
-                                                                                            <td> 
-                                                                                                {{asset_discovery["DPS HV"][i][j]}}
+                                                                                                {{AD_DPSHV[entry][key]}}
                                                                                             </td> 
                                                                                             
 
-                                                                                        {% endfor %} 
-                                                                                    
-                                                                                    {% endfor %}  
+                                                                                                                                                                        
+                                                                                   
 
                                                                                 </tr> 
+                                                                                {% endfor %}   
 
                                                                                 <!--{% if entry  %} {{asset_discovery}}   {% else %}  No traffic detected {% endif %} 
                                                                                 <h4>{{entry}}: {{asset_discovery[entry]}}</h4>-->
@@ -645,7 +625,7 @@
                                     </div>
                                 </div>
                             </div>
-
+            <!--                
             <div class="row">
                 <div class="col-md-12 col-xl-6">
                     <div class="card">
@@ -713,10 +693,12 @@
                         </div>
                     </div>
                 </div>
+                -->
                 <!-- users visite end -->
 
 
                 <!-- social statustic start -->
+                <!--
                 <div class="col-md-12 col-lg-4">
                     <div class="card seo-card overflow-hidden">
                         <div class="card-body seo-statustic">
@@ -749,8 +731,10 @@
                         </div>
                     </div>
                 </div>
+                -->
                 <!-- social statustic end -->
                 <!-- account-section start -->
+                <!-- 
                 <div class="col-lg-4 col-md-12">
                     <div class="card overflow-hidden">
                         <div class="card-body">
@@ -838,9 +822,12 @@
                         </div>
                     </div>
                 </div>
+                -->
                 <!-- account-section end -->
-
+            <!--
             </div>
+            -->
+            
             <!-- [ Main Content ] end -->
         </div>
     </div>

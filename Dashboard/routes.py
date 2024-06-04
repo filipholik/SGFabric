@@ -26,7 +26,17 @@ def index():
             context["connected_devices"] = len(data["connected_devices"])
             context["csp"] = "Connected"
             context["log"] = data["log"]
+
+            if "DPS HV" in data["asset_discovery"]: 
+                context["AD_DPSHV"] = data["asset_discovery"]["DPS HV"]
+                #print("DPS HV: " + str(context["DPS HV"]))
+
+            if "DPS RS" in data["asset_discovery"]: 
+                context["AD_DPSRS"] = data["asset_discovery"]["DPS RS"]
+
             context["asset_discovery"] = data["asset_discovery"]
+
+            #print(data["asset_discovery"])
         else:
             context["connected_devices"] = 0
     except requests.RequestException as e:
