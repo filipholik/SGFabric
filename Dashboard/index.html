@@ -171,13 +171,21 @@
                                                                                                 {{key.upper()}}
                                                                                             </td> 
                                                                                             <td> 
-                                                                                                Siemens?
+                                                                                                {% if "B4B15A" in key.upper() %}
+                                                                                                    Siemens
+
+                                                                                                 {% elif "30B216" in key.upper() %} 
+                                                                                                    Hitachi
+                                                                                                {% else %}   
+                                                                                                    Unknown device 
+                                                                                                {% endif %}
                                                                                             </td> 
                                                                                             <td> 
-                                                                                                {{AD_DPSHV[entry][key]}}
+                                                                                                
+                                                                                                {{AD_DPSHV[entry][key][-8:]}}
                                                                                             </td> 
                                                                                             <td> 
-                                                                                                {{AD_DPSHV[entry][key]}}
+                                                                                                {{AD_DPSHV[entry][key][:8]}}
                                                                                             </td> 
                                                                                             
 

@@ -29,7 +29,7 @@ def index():
 
             if "DPS HV" in data["asset_discovery"]: 
                 context["AD_DPSHV"] = data["asset_discovery"]["DPS HV"]
-                #print("DPS HV: " + str(context["DPS HV"]))
+                print("DPS HV: " + str(context["AD_DPSHV"]))
 
             if "DPS RS" in data["asset_discovery"]: 
                 context["AD_DPSRS"] = data["asset_discovery"]["DPS RS"]
