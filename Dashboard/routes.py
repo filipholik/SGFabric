@@ -28,11 +28,16 @@ def index():
             context["log"] = data["log"]
 
             if "DPS HV" in data["asset_discovery"]: 
-                context["AD_DPSHV"] = data["asset_discovery"]["DPS HV"]
-                print("DPS HV: " + str(context["AD_DPSHV"]))
+                context["AD_DPSHV"] = data["asset_discovery"]["DPS HV"]                
 
             if "DPS RS" in data["asset_discovery"]: 
                 context["AD_DPSRS"] = data["asset_discovery"]["DPS RS"]
+
+            if "DPS MV" in data["asset_discovery"]: 
+                context["AD_DPSMV"] = data["asset_discovery"]["DPS MV"]                
+
+            if "DSS2 GW" in data["asset_discovery"]: 
+                context["AD_DSS2GW"] = data["asset_discovery"]["DSS2 GW"]                
 
             context["asset_discovery"] = data["asset_discovery"]
 
