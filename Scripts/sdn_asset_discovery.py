@@ -28,8 +28,8 @@ class SimpleSwitch13(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
-	self.mac_to_packets = {}
-	self.mac_to_bytes = {}
+        self.mac_to_packets = {}
+        self.mac_to_bytes = {}
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -85,15 +85,21 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
-	self.mac_to_packets.setdefault(dpid, {})
+        self.mac_to_packets.setdefault(dpid, {})
         self.mac_to_bytes.setdefault(dpid, {})
 
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
-	if eth.ethertype == 35000: 
-	    self.mac_to_packets[dpid] += 1
-	    self.mac_to_bytes[dpid] += len(msg)
-	    self.logger.info("GOOSE message. Total packets: %s, bytes: %s ", str(self.mac_to_packets[dpid]), str(self.mac_to_bytes[dpid]))
+        if eth.ethertype == 35000:
+            # init, otherwise key error
+            if src not in self.mac_to_packets[dpid]: 
+                self.mac_to_packets[dpid][src] = 0
+            if src not in self.mac_to_bytes[dpid]: 
+                self.mac_to_bytes[dpid][src] = 0
+
+            self.mac_to_packets[dpid][src] += 1
+            self.mac_to_bytes[dpid][src] += len(msg.data)
+            self.logger.info("GOOSE message. Total packets: %s, bytes: %s ", str(self.mac_to_packets[dpid][src]), str(self.mac_to_bytes[dpid][src]))
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
