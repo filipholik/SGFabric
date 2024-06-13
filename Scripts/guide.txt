@@ -1,0 +1,9 @@
+Start the Dashboard
+cd ~/Dashboard/;sudo docker-compose up --build
+
+Start the Service Broker
+cd ~/BPFabric/controller/;./service_broker.py
+
+Start the Smart Grid topology
+cd ~/SmartGridSim/;./StartSGFabric.sh
+
