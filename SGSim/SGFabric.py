@@ -24,7 +24,7 @@ def smartGridSimNetwork():
     info( '\n*** ************************************* *** \n' )
     info( '*** Starting SGSim - BPFabric Orchestration *** \n' )
     info( '*** Topology: 1xDPS + 2xDSS + Control Center \n' )
-    info( '*** Version: 240315 \n' )
+    info( '*** Version: 240619 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     info( '*** Adding controller\n' )
@@ -65,8 +65,9 @@ def smartGridSimNetwork():
     IED3 = net.addHost('IED3', cls=eBPFHost, ip='1.1.3.3', defaultRoute='1.1.10.10',mac='00:00:00:00:00:03')
     IED4 = net.addHost('IED4', cls=eBPFHost, ip='1.1.3.4', defaultRoute='1.1.10.10',mac='30:B2:16:00:00:04')
     DPSHMI = net.addHost('DPSHMI', cls=eBPFHost, ip='1.1.3.10', defaultRoute='1.1.10.10',mac='00:00:00:00:00:05')
-    IDS = net.addHost('IDS', cls=eBPFHost, ip='1.1.1.66', defaultRoute='1.1.10.10',mac='00:00:00:00:00:66')
-
+    IDS = net.addHost('IDS', cls=eBPFHost, ip='1.1.1.8', defaultRoute='1.1.10.10',mac='00:00:00:00:00:88')
+    ATTACKER = net.addHost('ATTACKER', cls=eBPFHost, ip='1.1.3.66', defaultRoute='1.1.10.10',mac='00:00:00:00:00:66')
+    
     info( '*** Setting link parameters\n')
     #WAN1 = {'bw':1000,'delay':'20ms','loss':1,'jitter':'10ms'} 
     #GBPS = {'delay':'18ms'} 
@@ -90,6 +91,7 @@ def smartGridSimNetwork():
     net.addLink(DPSHMI, DPSRS)
 
     net.addLink(DSS1GW, IDS)
+    net.addLink(ATTACKER, DPSHV)
 
     info( '*** Adding redundant links\n')
     #net.addLink(WANR2, DSS1GW, cls=TCLink , **GBPS)
@@ -146,9 +148,9 @@ def sgsim_startcom_goose(self, line):
     time.sleep(0.5)
     net.get('IED4').cmdPrint('xterm -geometry 90x30+30+30 -fa "Monospace" -fs 12 -T "IED4-GOOSE" -e "cd ../comlib_dps/sgdevices/IED_GOOSE/;./ied_goose IED4-eth0;bash"&') 
     time.sleep(0.5)
-    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+50+50 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-1" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi 1;bash"&') 
+    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+50+50 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-1" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi;bash"&') 
     time.sleep(0.5)
-    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi 4;bash"&') 
+    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi;bash"&') 
 
 def sgsim_startcom_sglab_goose(self, line):
     "Starts the GOOSE communication according to the SG LAB data." 
