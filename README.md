@@ -6,9 +6,6 @@ Contains glue files which have to be added to SGSim and BPFabric (or have to rep
 Requires current version of BPFabric and SGSim.  
 Dashboard requires Gradient Able Flask. 
 
-# TODO
-Create a storage on the controller for caching content of eBPF maps.    
-
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
 
