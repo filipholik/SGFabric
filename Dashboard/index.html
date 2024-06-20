@@ -24,7 +24,7 @@
                             <h2 class="text-end text-white"><i class="feather icon-eye float-start"></i><span>{{csp}}</span>
                             </h2>
                             <p class="m-b-0">
-                                {% if csp == 'Connected' %} Running on 172.17.0.1:5000  {% else %}  Could not contact the service provider {% endif %} 
+                                {% if csp == 'Connected' %} Running on 172.17.0.1:5000  {% else %} Could not contact the service provider  {% endif %} 
                                 
                                 <span class="float-end"></span></p>
                         </div>
@@ -177,7 +177,7 @@
                                                                                                  {% elif "30B216" in key.upper() %} 
                                                                                                     Hitachi
                                                                                                 {% else %}   
-                                                                                                    Unknown device 
+                                                                                                    <div style="color:red"> Unknown device! </div>
                                                                                                 {% endif %}
                                                                                             </td> 
                                                                                             <td> 
@@ -234,7 +234,7 @@
                                                                                              {% elif "30B216" in key.upper() %} 
                                                                                                 Hitachi
                                                                                             {% else %}   
-                                                                                                Unknown device 
+                                                                                                <div style="color:red"> Unknown device! </div>
                                                                                             {% endif %}
                                                                                         </td> 
                                                                                         <td> 
@@ -291,7 +291,7 @@
                                                                                              {% elif "30B216" in key.upper() %} 
                                                                                                 Hitachi
                                                                                             {% else %}   
-                                                                                                Unknown device 
+                                                                                                <div style="color:red"> Unknown device! </div>
                                                                                             {% endif %}
                                                                                         </td> 
                                                                                         <td> 
@@ -348,7 +348,7 @@
                                                                                              {% elif "30B216" in key.upper() %} 
                                                                                                 Hitachi
                                                                                             {% else %}   
-                                                                                                Unknown device 
+                                                                                                <div style="color:red"> Unknown device! </div>
                                                                                             {% endif %}
                                                                                         </td> 
                                                                                         <td> 
