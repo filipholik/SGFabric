@@ -6,6 +6,14 @@ Contains glue files which have to be added to SGSim and BPFabric (or have to rep
 Requires current version of BPFabric and SGSim.  
 Dashboard requires Gradient Able Flask. 
 
+# Installation
+BPFabric: apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted
+
+SGSim: apt-get install mininet
+git clone https://github.com/filipholik/SmartGridSim 
+unzip SmartGridSim/comlib_dps.zip -d SmartGridSim
+unzip SmartGridSim/comlib_dss.zip -d SmartGridSim
+
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
 
