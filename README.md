@@ -7,7 +7,7 @@ Requires current version of BPFabric and SGSim.
 Dashboard requires Gradient Able Flask. 
 
 # Installation
-BPFabric: 
+BPFabric:  
 git clone https://github.com/UofG-netlab/BPFabric
 apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted
 cd BPFabric
