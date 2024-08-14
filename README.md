@@ -7,18 +7,29 @@ Requires current version of BPFabric and SGSim.
 Dashboard requires Gradient Able Flask. 
 
 # Installation
-BPFabric: apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted
+BPFabric: 
+git clone https://github.com/UofG-netlab/BPFabric
+apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted
 
-SGSim: apt-get install mininet
+SGSim: 
+apt-get install mininet
 git clone https://github.com/filipholik/SmartGridSim 
 unzip SmartGridSim/comlib_dps.zip -d SmartGridSim
 unzip SmartGridSim/comlib_dss.zip -d SmartGridSim
+
+Dashboard:
+
+SGFabric 
+git clone https://github.com/filipholik/SGFabric
+Add / replace corresponding files in BPFabric and SGSim.   
+
 
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
 
 # Usage
-Add / replace corresponding files in BPFabric and SGSim.   
+cd BPFabric
+make 
 
 Printing maps tables:  
 8 table 0 list   
