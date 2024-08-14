@@ -10,6 +10,8 @@ Dashboard requires Gradient Able Flask.
 BPFabric: 
 git clone https://github.com/UofG-netlab/BPFabric
 apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted
+cd BPFabric
+make 
 
 SGSim: 
 apt-get install mininet
@@ -18,18 +20,25 @@ unzip SmartGridSim/comlib_dps.zip -d SmartGridSim
 unzip SmartGridSim/comlib_dss.zip -d SmartGridSim
 
 Dashboard:
+git clone https://github.com/app-generator/flask-gradient-able.git
+sudo apt install python3-virtualenv
+virtualenv env
+source env/bin/activate
+pip3 install -r requirements.txt
+export FLASK_APP=run.py
+export FLASK_ENV=development
+flask run 
+(pip install requests)
 
-SGFabric 
+SGFabric:
 git clone https://github.com/filipholik/SGFabric
-Add / replace corresponding files in BPFabric and SGSim.   
-
+Add / replace corresponding files in BPFabric, SmartGridSim and Dashboard.   
 
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
 
 # Usage
-cd BPFabric
-make 
+
 
 Printing maps tables:  
 8 table 0 list   
