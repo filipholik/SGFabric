@@ -9,7 +9,7 @@ Dashboard requires Gradient Able Flask.
 # Installation
 BPFabric:  
 git clone https://github.com/UofG-netlab/BPFabric  
-apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted  
+apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted clang 
 cd BPFabric  
 make   
 
@@ -33,6 +33,7 @@ flask run
 SGFabric:  
 git clone https://github.com/filipholik/SGFabric  
 Add / replace corresponding files in BPFabric, SmartGridSim and Dashboard.     
+sudo apt install python3-flask  
 
 # Topology 
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
