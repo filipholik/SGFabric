@@ -245,7 +245,73 @@ def start():
     #Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
     storage.eBPFApp = eBPFCLIApplication().run()
     storage.status["status"] = "Nodes connected"    
-    return '<h2> Connecting to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
+    #return '<h2> Connecting to the nodes... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h2>'
+    return """\
+        <!DOCTYPE html>
+<html>
+<style>
+#myProgress {
+  width: 100%;
+  background-color: #ddd;
+}
+
+#myBar {
+  width: 10%;
+  height: 30px;
+  background-color: #2ed8b6; //#04AA6D;
+  text-align: center;
+  line-height: 30px;
+  color: black;
+}
+
+#content{
+  display:none;
+}
+</style>
+
+<head>
+    <script>
+    var i = 0;
+    function move() {
+        if (i == 0) {
+            i = 1;
+            var elem = document.getElementById("myBar");
+            var width = 10;
+            var id = setInterval(frame, 20);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    document.getElementById('content').style.display = 'block'; 
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                    elem.innerHTML = width  + "%";
+                }
+            }
+        }
+    }
+    window.onload = move; 
+    </script>
+</head>
+
+<body>
+
+<h1>Connecting to the nodes... </h1>
+
+<div id="myProgress">
+  <div id="myBar">10%</div>
+</div>
+
+<div id="content">
+    <h1>Connected</h1>
+    <h1><a href="http://127.0.0.1:5000/index"> Back </a></h1>
+</div>
+
+</body>
+</html>
+
+"""
 
 @app.get("/status")
 def get_status():    
@@ -266,8 +332,7 @@ def refresh_asset_discovery():
 def install_functions():    
     #storage.eBPFApp.install()
     install()
-    return '<h2> Installing functions to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
-    
+    return '<h1> All functions installed... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h1>'
     #return json.dumps(list(storage.connected_devices))
 
 def install(): 
