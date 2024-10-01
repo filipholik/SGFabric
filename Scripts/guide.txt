@@ -1,8 +1,8 @@
 Start the Dashboard 
-(docker version - 240613 version)
+For the VM version 240613, use this docker command: 
 cd ~/Dashboard/;sudo docker-compose up --build
 
-(virtual env version - 241001+ version)
+For the VM version 241001, use this virtual env command: 
 cd ~/Dashboard/;source env/bin/activate;flask run
 
 Start the Service Broker
