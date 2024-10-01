@@ -20,11 +20,11 @@
                     {% if csp == 'Connected' %} bg-c-green  {% else %}  bg-c-red {% endif %}                    
                     order-card">
                         <div class="card-body">
-                            <h6 class="text-white">Service Provider Status</h6>
+                            <h6 class="text-white">Controller Status</h6>
                             <h2 class="text-end text-white"><i class="feather icon-eye float-start"></i><span>{{csp}}</span>
                             </h2>
                             <p class="m-b-0">
-                                {% if csp == 'Connected' %} Running on 172.17.0.1:5000  {% else %} Could not contact the service provider  {% endif %} 
+                                {% if csp == 'Connected' %} Running on 127.0.01:5050  {% else %} Could not connect to the controller  {% endif %} 
                                 
                                 <span class="float-end"></span></p>
                         </div>
@@ -48,7 +48,7 @@
                         <div class="card-body">
                             <h6 class="text-white">Nodes Control</h6>
                             <h2 class="text-end text-white"><i class="feather icon-shuffle float-start"></i><span>
-                                <a href="http://172.17.0.1:5000/start" class="btn btn-primary btn-sm btn-round 
+                                <a href="http://127.0.01:5050/start" class="btn btn-primary btn-sm btn-round 
                                 {% if connected_devices and connected_devices > 0 %} disabled {% endif %}            
                                 ">Connect</a>
                             </span>
@@ -65,7 +65,7 @@
                         <div class="card-body">
                             <h6 class="text-white">Functions Control</h6>
                             <h2 class="text-end text-white"><i class="feather icon-shuffle float-start"></i><span>
-                                <a href="http://172.17.0.1:5000/install" class="btn btn-primary btn-sm btn-round">Install</a>
+                                <a href="http://127.0.01:5050/install" class="btn btn-primary btn-sm btn-round">Install</a>
                             </span>
                             </h2>
                             <p class="m-b-0">
