@@ -401,5 +401,6 @@ def install():
 
 if __name__ == '__main__':
     #LearningSwitchApplication().run()
-    app.run(host="172.17.0.1", port=5000)
+    #app.run(host="172.17.0.1", port=5000)
+    app.run(host="127.0.0.1", port=5050)
     
