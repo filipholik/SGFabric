@@ -10,6 +10,8 @@ from jinja2 import TemplateNotFound
 
 import requests
 
+SB_URL = "http://127.0.0.1:5050/" #http://172.17.0.1:5000/
+
 def getDataFromCSB(url):
     return requests.post(url) 
     
@@ -19,7 +21,7 @@ def getDataFromCSB(url):
 def index():
     context = {"test": "test", "csp": "Not connected"}
     try:
-        reply = requests.get("http://172.17.0.1:5000/status")
+        reply = requests.get(SB_URL + "status")
         data = reply.json()
         print("Code: " + str(reply.status_code))     
         if reply.status_code == 200: 
