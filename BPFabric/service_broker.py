@@ -350,7 +350,7 @@ def install():
             storage.connections[5].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
             storage.connections[6].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSGW
             storage.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSRS
-            storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSHV
+            storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSHV #1
             storage.connections[9].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
             time.sleep(1)    
             print("All forwarding services installed...")   
@@ -374,11 +374,18 @@ def install():
             print("Installing Asset Discovery service...")
             elf = f.read() 
             storage.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
-            storage.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
+            storage.connections[8].send(FunctionAddRequest(name="assetdisc", index=1, elf=elf)) #0
             storage.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
             storage.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
             time.sleep(1)
-            print("ACL service installed...")              
+            print("ACL service installed...")   
+
+        with open('../examples/dos_mitigation.o', 'rb') as f:
+            print("Installing Denial of Service Prevention service...")
+            elf = f.read() 
+            storage.connections[8].send(FunctionAddRequest(name="dos", index=0, elf=elf)) #0   
+            time.sleep(1)
+            print("Denial of Service Prevention service installed...")           
 
         time.sleep(1)
         print("All functions installed...")
