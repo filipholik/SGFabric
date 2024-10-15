@@ -225,6 +225,12 @@ main(int argc, char** argv)
         Thread_sleep(1000);
     }
 
+	while(true)
+	{
+		gooseFloatPoint68(interface);
+		Thread_sleep(1000);
+	}
+
 	    //while(true) { /* for (i = 0; i < 3; i++)*/
 	    //    Thread_sleep(1000); //2
 
