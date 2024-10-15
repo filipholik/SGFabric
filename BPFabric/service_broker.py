@@ -204,6 +204,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
             vendor = 'Siemens'  
         #print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
         connection.send(TableListRequest(index=0, table_name="assetdisc"))
+        connection.send(TableListRequest(index=1, table_name="assetdisc")) # For the DoS service! 
 
 
     @set_event_handler(Header.PACKET_IN)
