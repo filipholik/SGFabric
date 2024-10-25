@@ -24,7 +24,7 @@ def smartGridSimNetwork():
     info( '\n*** ************************************* *** \n' )
     info( '*** Starting SGSim - BPFabric Orchestration *** \n' )
     info( '*** Topology: 1xDPS + 2xDSS + Control Center \n' )
-    info( '*** Version: 240619 \n' )
+    info( '*** Version: 241025 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     info( '*** Adding controller\n' )
@@ -52,21 +52,21 @@ def smartGridSimNetwork():
     #DSS1ASW = net.addSwitch('DSS1ASW', dpid=10, switch_path=switchPath) #,failMode='standalone') 
     #DSS2ASW = net.addSwitch('DSS2ASW', dpid=11, switch_path=switchPath) #,failMode='standalone') 
     #Intf( 'enp0s3', node=DSS1ASW )
-    #Intf( 'enp0s8', node=DSS2ASW )
+    Intf( 'enp0s8', node=DPSHV )
     #Intf( 'enp0s9', node=DPSHV )
     #Intf( 'enp0s10', node=DPSGW )
 
     info( '*** Starting hosts \n')
-    DSS1RTU = net.addHost('DSS1RTU', cls=eBPFHost, ip='1.1.1.1', defaultRoute='1.1.10.10',mac='00:00:00:00:00:06')
-    DSS2RTU = net.addHost('DSS2RTU', cls=eBPFHost, ip='1.1.2.1', defaultRoute='1.1.10.10',mac='00:00:00:00:00:07')
-    CONTROL = net.addHost('CONTROL', cls=eBPFHost, ip='1.1.10.10', defaultRoute='1.1.1.1',mac='00:00:00:00:00:08')
+    DSS1RTU = net.addHost('DSS1RTU', cls=eBPFHost, ip='1.1.1.1', defaultRoute='1.1.10.10',mac='b4:b1:5a:00:00:06')
+    DSS2RTU = net.addHost('DSS2RTU', cls=eBPFHost, ip='1.1.2.1', defaultRoute='1.1.10.10',mac='b4:b1:5a:00:00:07')
+    CONTROL = net.addHost('CONTROL', cls=eBPFHost, ip='1.1.10.10', defaultRoute='1.1.1.1',mac='00:0c:f1:00:00:08')
     IED1 = net.addHost('IED1', cls=eBPFHost, ip='1.1.3.1', defaultRoute='1.1.10.10',mac='b4:b1:5a:00:00:01')
-    IED2 = net.addHost('IED2', cls=eBPFHost, ip='1.1.3.2', defaultRoute='1.1.10.10',mac='00:00:00:00:00:02')
-    IED3 = net.addHost('IED3', cls=eBPFHost, ip='1.1.3.3', defaultRoute='1.1.10.10',mac='00:00:00:00:00:03')
+    IED2 = net.addHost('IED2', cls=eBPFHost, ip='1.1.3.2', defaultRoute='1.1.10.10',mac='b4:b1:5a:00:00:02')
+    IED3 = net.addHost('IED3', cls=eBPFHost, ip='1.1.3.3', defaultRoute='1.1.10.10',mac='30:B2:16:00:00:03')
     IED4 = net.addHost('IED4', cls=eBPFHost, ip='1.1.3.4', defaultRoute='1.1.10.10',mac='30:B2:16:00:00:04')
-    DPSHMI = net.addHost('DPSHMI', cls=eBPFHost, ip='1.1.3.10', defaultRoute='1.1.10.10',mac='00:00:00:00:00:05')
-    IDS = net.addHost('IDS', cls=eBPFHost, ip='1.1.1.8', defaultRoute='1.1.10.10',mac='00:00:00:00:00:88')
-    ATTACKER = net.addHost('ATTACKER', cls=eBPFHost, ip='1.1.3.66', defaultRoute='1.1.10.10',mac='00:00:00:00:00:66')
+    DPSHMI = net.addHost('DPSHMI', cls=eBPFHost, ip='1.1.3.10', defaultRoute='1.1.10.10',mac='00:02:b3:00:00:05')
+    IDS = net.addHost('IDS', cls=eBPFHost, ip='1.1.1.8', defaultRoute='1.1.10.10',mac='00:00:0c:00:00:88')
+    #ATTACKER = net.addHost('ATTACKER', cls=eBPFHost, ip='1.1.3.66', defaultRoute='1.1.10.10',mac='00:03:47:00:00:66')
     
     info( '*** Setting link parameters\n')
     #WAN1 = {'bw':1000,'delay':'20ms','loss':1,'jitter':'10ms'} 
@@ -91,7 +91,7 @@ def smartGridSimNetwork():
     net.addLink(DPSHMI, DPSRS)
 
     net.addLink(DSS1GW, IDS)
-    net.addLink(ATTACKER, DPSHV)
+    #net.addLink(ATTACKER, DPSHV)
 
     info( '*** Adding redundant links\n')
     #net.addLink(WANR2, DSS1GW, cls=TCLink , **GBPS)
@@ -150,7 +150,7 @@ def sgsim_startcom_goose(self, line):
     time.sleep(0.5)
     net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+50+50 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-1" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi;bash"&') 
     time.sleep(0.5)
-    net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi;bash"&') 
+    #net.get('DPSHMI').cmdPrint('xterm -geometry 90x30+70+70 -fa "Monospace" -fs 12 -T "DPSHMI-GOOSE-4" -e "cd ../comlib_dps/sgdevices/DPSHMI_GOOSE/;./dpshmi;bash"&') 
 
 def sgsim_startcom_sglab_goose(self, line):
     "Starts the GOOSE communication according to the SG LAB data." 
