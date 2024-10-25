@@ -2,7 +2,7 @@
 Modified files from SGSim and BPFabric to build an emulated Smart Grid network controlled by eBPF functions.    
 Contains glue files which have to be added to SGSim and BPFabric (or have to replace original files).    
  
-Stable version provided at University of Glasgow Netlab: https://github.com/UofG-netlab/SGFabric
+Stable version provided at the University of Glasgow Netlab: https://github.com/UofG-netlab/SGFabric
 
 # Requirements
 Requires current version of BPFabric and SGSim.  
