@@ -144,7 +144,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         if(len(self.application.connections) == 9): 
             print(f'All networking device connected. ')
             log += f'All networking device connected. \n'
-            with open('../examples/learningswitch.o', 'rb') as f:
+            with open('../functions/learningswitch.o', 'rb') as f:
                 print("Installing forwarding services...")
                 elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
                 self.application.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
@@ -159,21 +159,21 @@ class eBPFCLIApplication(eBPFCoreApplication):
                 time.sleep(1)    
                 print("All forwarding services installed...")            
 
-            with open('../examples/mirror.o', 'rb') as f:
+            with open('../functions/mirror.o', 'rb') as f:
                 print("Installing mirroring service...")
                 elf = f.read() 
                 self.application.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
                 time.sleep(1)
                 print("Mirroring service installed...")
 
-            with open('../examples/block.o', 'rb') as f:
+            with open('../functions/block.o', 'rb') as f:
                 print("Installing ACL service...")
                 elf = f.read() 
                 self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf))                 
                 time.sleep(1)
                 print("ACL service installed...")                
 
-            with open('../examples/assetdisc.o', 'rb') as f:
+            with open('../functions/assetdisc.o', 'rb') as f:
                 print("Installing Asset Discovery service...")
                 elf = f.read() 
                 self.application.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
@@ -278,7 +278,7 @@ def start():
             i = 1;
             var elem = document.getElementById("myBar");
             var width = 10;
-            var id = setInterval(frame, 20);
+            var id = setInterval(frame, 30);
             function frame() {
                 if (width >= 100) {
                     clearInterval(id);
@@ -341,7 +341,7 @@ def install():
     storage.log[str(datetime.datetime.now())] = "Installation of functions started"
     if(len(storage.connected_devices) == 9): 
         print(f'All networking device connected. ')
-        with open('../examples/learningswitch.o', 'rb') as f:
+        with open('../functions/forwarding.o', 'rb') as f:
             print("Installing forwarding services...")
             elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
             storage.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
@@ -357,21 +357,21 @@ def install():
             print("All forwarding services installed...")   
             # return         
 
-        with open('../examples/mirror.o', 'rb') as f:
+        with open('../functions/mirror.o', 'rb') as f:
             print("Installing mirroring service...")
             elf = f.read() 
             storage.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
             time.sleep(1)
             print("Mirroring service installed...")
 
-        with open('../examples/block.o', 'rb') as f:
+        with open('../functions/block.o', 'rb') as f:
             print("Installing ACL service...")
             elf = f.read() 
             storage.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf))                 
             time.sleep(1)
             print("ACL service installed...")                
 
-        with open('../examples/assetdisc.o', 'rb') as f:
+        with open('../functions/assetdisc.o', 'rb') as f:
             print("Installing Asset Discovery service...")
             elf = f.read() 
             storage.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
@@ -381,10 +381,10 @@ def install():
             time.sleep(1)
             print("ACL service installed...")   
 
-        with open('../examples/dos_mitigation.o', 'rb') as f:
+        with open('../functions/dos_mitigation.o', 'rb') as f:
             print("Installing Denial of Service Prevention service...")
             elf = f.read() 
-            storage.connections[8].send(FunctionAddRequest(name="dos", index=0, elf=elf)) #0   
+            #storage.connections[8].send(FunctionAddRequest(name="dos", index=0, elf=elf)) #0   
             time.sleep(1)
             print("Denial of Service Prevention service installed...")           
 
@@ -403,7 +403,7 @@ def install():
     #def hello(self, connection, pkt):
         #self.mac_to_port = {}
 
-        #with open('../examples/learningswitch.o', 'rb') as f:
+        #with open('../functions/learningswitch.o', 'rb') as f:
             #print("Installing the eBPF ELF")
             #connection.send(FunctionAddRequest(name="learningswitch", index=0, elf=f.read()))
 
