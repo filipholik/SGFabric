@@ -24,7 +24,7 @@ def smartGridSimNetwork():
     info( '\n*** ************************************* *** \n' )
     info( '*** Starting SGSim - BPFabric Orchestration *** \n' )
     info( '*** Topology: 1xDPS + 2xDSS + Control Center \n' )
-    info( '*** Version: 241025 \n' )
+    info( '*** Version: 241030 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     info( '*** Adding controller\n' )
@@ -133,10 +133,23 @@ def smartGridSimNetwork():
     CLI.do_sgsim_attackmirror = sgsim_attackmirror
     CLI.do_sgsim_attack_goose_fdi = sgsim_attack_goose_fdi
     CLI.do_sgsim_attack_dos = sgsim_attack_dos
+    CLI.do_sgsim_packet_count = sgsim_packet_count
     info( '*** Smart Grid Simulation Model Started *** \n' )
     CLI(net)
 
     net.stop()
+
+def sgsim_packet_count(self, line):
+    "Counts received packets on every end device in the topology" 
+    net = self.mn  
+    net.get('IED1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "IED1" -e "sudo tcpdump;bash"&') 
+    net.get('IED2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "IED2" -e "sudo tcpdump;bash"&')
+    net.get('IED3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "IED3" -e "sudo tcpdump;bash"&')
+    net.get('IED4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "IED4" -e "sudo tcpdump;bash"&')
+    net.get('DSS1RTU').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "RTU1" -e "sudo tcpdump;bash"&')
+    net.get('DSS2RTU').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "RTU2" -e "sudo tcpdump;bash"&')
+    net.get('CONTROL').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "CONTROL" -e "sudo tcpdump;bash"&')
+
 
 def sgsim_startcom_goose(self, line):
     "Starts the GOOSE communication in the primary substation." 
