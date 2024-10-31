@@ -23,6 +23,7 @@ class storage():
     cache = {}
     log = {str(datetime.datetime.now()): "Service Provider started"}
     asset_discovery = {} # dpid: mac : bytes : packets
+    monitoring = {} # mac : bytes
     eBPFApp = None
 
 class eBPFCLIApplication(eBPFCoreApplication):
@@ -75,8 +76,13 @@ class eBPFCLIApplication(eBPFCoreApplication):
 
     @set_event_handler(Header.TABLE_LIST_REPLY)
     def table_list_reply(self, connection, pkt):
+        #print("Table reply received: " + str(connection) + "," + str(pkt))
         if pkt.entry.table_name == "assetdisc":
             self.asset_disc_list(connection.dpid, pkt) # Collecting data for Asset Discovery service 
+            return 
+        
+        if pkt.entry.table_name == "monitor":
+            self.monitoring_list(connection.dpid, pkt) # Collecting data for Monitoring service 
             return 
     
         entries = []
@@ -104,6 +110,42 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
         print()
 
+    def monitoring_list(self, dpid, pkt):
+        entries = {}
+        packets = {}
+
+        f = open("monitoring_logg.txt", "a")      
+
+        timestamp = str(datetime.datetime.now())        
+        f.write(str(timestamp) + "\n")
+        
+        item_size = pkt.entry.key_size + pkt.entry.value_size
+        fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
+
+        for i in range(pkt.n_items):
+            key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
+            #entries.append((key.hex(), value.hex()))   
+            valStr = eBPFCLIApplication.get_str_values(value)
+            bytesTotal = valStr.split(",",1)[1]
+            if key not in storage.monitoring: 
+                storage.monitoring[key] = 0 
+            
+            bandwidth = int(bytesTotal) - int(storage.monitoring[key])
+            storage.monitoring[key] = int(bytesTotal)
+
+            if bandwidth > 0: 
+                f.write(str(key.hex()) + ";" + str(bandwidth) + "\n")
+
+            #entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
+            #packets[i] = entries
+            #storage.asset_discovery[str(key.hex())] = str(value.hex())    
+            
+        #storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
+        #f.write(packets)
+        f.write(str("--- \n"))
+        f.close()
+        print("Monitoring logged")
+
 
     def asset_disc_list(self, dpid, pkt):
         #os.system('clear')
@@ -123,9 +165,6 @@ class eBPFCLIApplication(eBPFCoreApplication):
             
         storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
         #print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
-
-        
-        
         #self.assetDiscoveryCache.tablesDict[""] = entries 
         print("Table logged")
         #tabulate(entries, headers=["Key", "Value"])
@@ -205,7 +244,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
         connection.send(TableListRequest(index=0, table_name="assetdisc"))
         connection.send(TableListRequest(index=1, table_name="assetdisc")) # For the DoS service! 
-
+        #connection.send(TableListRequest(index=0, table_name="monitor"))
 
     @set_event_handler(Header.PACKET_IN)
     def packet_in(self, connection, pkt):
@@ -278,7 +317,7 @@ def start():
             i = 1;
             var elem = document.getElementById("myBar");
             var width = 10;
-            var id = setInterval(frame, 30);
+            var id = setInterval(frame, 35);
             function frame() {
                 if (width >= 100) {
                     clearInterval(id);
@@ -336,6 +375,17 @@ def install_functions():
     return '<h1> All functions installed... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h1>'
     #return json.dumps(list(storage.connected_devices))
 
+def threaded_mon_timer():
+    while True:
+        storage.connections[6].send(TableListRequest(index=0, table_name="monitor"))
+        #connection.send(TableListRequest(index=0, table_name="assetdisc"))
+        print("Sending monitoring request")
+        time.sleep(1)
+
+def start_monitoring():
+    thread = Thread(target = threaded_mon_timer, args = ())
+    thread.start() 
+
 def install(): 
     print(f'Installing SGSim orchestration functions...')
     storage.log[str(datetime.datetime.now())] = "Installation of functions started"
@@ -349,7 +399,7 @@ def install():
             storage.connections[3].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
             storage.connections[4].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
             storage.connections[5].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-            storage.connections[6].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSGW
+            storage.connections[6].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSGW
             storage.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSRS
             storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSHV #1
             storage.connections[9].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
@@ -360,24 +410,25 @@ def install():
         with open('../functions/mirror.o', 'rb') as f:
             print("Installing mirroring service...")
             elf = f.read() 
-            storage.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
+            #storage.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
             time.sleep(1)
             print("Mirroring service installed...")
 
         with open('../functions/block.o', 'rb') as f:
             print("Installing ACL service...")
             elf = f.read() 
-            storage.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf))                 
+            storage.connections[6].send(FunctionAddRequest(name="acl", index=1, elf=elf))
+            #storage.connections[2].send(FunctionAddRequest(name="acl", index=0, elf=elf))                  
             time.sleep(1)
             print("ACL service installed...")                
 
         with open('../functions/assetdisc.o', 'rb') as f:
             print("Installing Asset Discovery service...")
             elf = f.read() 
-            storage.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
+            storage.connections[7].send(FunctionAddRequest(name="assetdisc", index=1, elf=elf))   
             storage.connections[8].send(FunctionAddRequest(name="assetdisc", index=1, elf=elf)) #0
             storage.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
-            storage.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
+            #storage.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
             time.sleep(1)
             print("ACL service installed...")   
 
@@ -386,7 +437,16 @@ def install():
             elf = f.read() 
             #storage.connections[8].send(FunctionAddRequest(name="dos", index=0, elf=elf)) #0   
             time.sleep(1)
-            print("Denial of Service Prevention service installed...")           
+            print("Denial of Service Prevention service installed...")     
+
+        with open('../functions/monitoring.o', 'rb') as f:
+            print("Installing Monitoring service...")
+            elf = f.read() 
+            storage.connections[6].send(FunctionAddRequest(name="monitor", index=0, elf=elf)) #0   
+            #storage.connections[7].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
+            start_monitoring()
+            time.sleep(1)
+            print("Monitoring service installed...")         
 
         time.sleep(1)
         print("All functions installed...")
