@@ -197,8 +197,64 @@ void gooseFloatPoint35(char* interface)
 	
 }
 
-int
-main(int argc, char** argv)
+void gooseNetlab(char* interface, int stNum, int sqNum, bool data)
+{
+    LinkedList dataSetValues = LinkedList_create(); 	
+	CommParameters gooseCommParameters;
+	gooseCommParameters.appId = 0x0001;
+	gooseCommParameters.dstAddress[0] = 0x01;
+	gooseCommParameters.dstAddress[1] = 0x0c;
+	gooseCommParameters.dstAddress[2] = 0xcd;
+	gooseCommParameters.dstAddress[3] = 0x01;
+	gooseCommParameters.dstAddress[4] = 0x00;
+    gooseCommParameters.dstAddress[5] = 0x09;
+
+    LinkedList_add(dataSetValues, MmsValue_newFloat(generateRandomNumber(5.001, 5.01))); 
+    LinkedList_add(dataSetValues, MmsValue_newBoolean(data));
+    LinkedList_add(dataSetValues, MmsValue_newBitString(0));
+
+
+    GoosePublisher publisher = GoosePublisher_create(&gooseCommParameters, interface);
+    GoosePublisher_setGoID(publisher, "SIP/VI3p1_27Undervoltage1/LLN0/Control_DataSet");
+	GoosePublisher_setStNumSqNum(publisher, stNum, sqNum);
+
+    if (GoosePublisher_publish(publisher, dataSetValues) == -1) {
+	    printf("Error sending message!\n");
+	}
+          
+    GoosePublisher_destroy(publisher);
+	LinkedList_destroyDeep(dataSetValues, (LinkedListValueDeleteFunction) MmsValue_delete);
+} 
+
+void sub_experiment(char* interface)
+{
+	//Experiment 30s -1s - 60s 
+	for(int i = 0; i < 60; i++){
+		//Burst operation
+		if(i == 30){
+			for(int j = 0; j < 100; j++){
+				gooseFloatPoint68(interface);
+				Thread_sleep(10);
+			}
+		}	
+		gooseFloatPoint68(interface);
+		Thread_sleep(1000);
+	}
+}
+
+void cont_exp(char* interface)
+{
+	int sqNum = 1;
+	int stNum = 666;
+	while(true)
+	{
+		//gooseFloatPoint68(interface);
+		gooseNetlab(interface, stNum, sqNum++, false); 
+		Thread_sleep(1000);
+	}
+}
+
+int main(int argc, char** argv)
 {
     char* interface;
 
@@ -210,42 +266,9 @@ main(int argc, char** argv)
     printf("Using interface %s\n", interface);
 
     signal(SIGINT, sigint_handler);
-    updateGooseDb(interface);
+    //updateGooseDb(interface);
 
-    //Experiment 30s -1s - 60s 
-    for(int i = 0; i < 60; i++){
-	//Burst operation
-	if(i == 30){
-	    for(int j = 0; j < 100; j++){
-	        gooseFloatPoint68(interface);
-                Thread_sleep(10);
-	    }
-	}	
-        gooseFloatPoint68(interface);
-        Thread_sleep(1000);
-    }
-
-	while(true)
-	{
-		gooseFloatPoint68(interface);
-		Thread_sleep(1000);
-	}
-
-	    //while(true) { /* for (i = 0; i < 3; i++)*/
-	    //    Thread_sleep(1000); //2
-
-                //int i = 0;
-		//for (i = 0; i < 14; i++) { 
-		//	gooseFloatPoint68(interface);
-		//} 
-
-                //gooseFloatPoint68(interface);
-                
-		//Thread_sleep(0.1); //0.2
-		//gooseFloatPoint35(interface);
-
-	        
-	    //}
+	cont_exp(interface); 
 
 }
 
