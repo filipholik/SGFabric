@@ -215,8 +215,20 @@ void gooseNetlab(char* interface, int stNum, int sqNum, bool data)
 
 
     GoosePublisher publisher = GoosePublisher_create(&gooseCommParameters, interface);
-    GoosePublisher_setGoID(publisher, "SIP/VI3p1_27Undervoltage1/LLN0/Control_DataSet");
-	GoosePublisher_setStNumSqNum(publisher, stNum, sqNum);
+	if (publisher) {
+		char s_cb[16];
+		char s_data[16];  
+		char s_go[16];
+		sprintf(s_cb, "SIPVI3p1_Operat"); 
+		sprintf(s_data, "SIPVI3p1_Operat"); 
+		sprintf(s_go, "SIP/VI3p1_Opera"); 
+    	GoosePublisher_setGoCbRef(publisher, s_cb);
+		GoosePublisher_setDataSetRef(publisher, s_data);
+    	GoosePublisher_setGoID(publisher, s_go);
+		GoosePublisher_setConfRev(publisher, 10001);
+		GoosePublisher_setTimeAllowedToLive(publisher, 3000); 
+		GoosePublisher_setStNumSqNum(publisher, stNum, sqNum);
+	}
 
     if (GoosePublisher_publish(publisher, dataSetValues) == -1) {
 	    printf("Error sending message!\n");
