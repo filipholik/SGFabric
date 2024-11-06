@@ -84,6 +84,10 @@ class eBPFCLIApplication(eBPFCoreApplication):
         if pkt.entry.table_name == "monitor":
             self.monitoring_list(connection.dpid, pkt) # Collecting data for Monitoring service 
             return 
+        
+        if pkt.entry.table_name == "goose_analyser":
+            self.goose_analyser_list(connection.dpid, pkt) # Collecting data for GOOSE Analyser
+            return 
     
         entries = []
 
@@ -117,7 +121,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         f = open("monitoring_logg.txt", "a")      
 
         timestamp = str(datetime.datetime.now())        
-        f.write(str(timestamp) + "\n")
+        #f.write(str(timestamp) + "\n")
         
         item_size = pkt.entry.key_size + pkt.entry.value_size
         fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
@@ -134,7 +138,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
             storage.monitoring[key] = int(bytesTotal)
 
             if bandwidth > 0: 
-                f.write(str(key.hex()) + ";" + str(bandwidth) + "\n")
+                f.write(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
 
             #entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
             #packets[i] = entries
@@ -142,9 +146,32 @@ class eBPFCLIApplication(eBPFCoreApplication):
             
         #storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
         #f.write(packets)
-        f.write(str("--- \n"))
+        #f.write(str("--- \n"))
         f.close()
-        print("Monitoring logged")
+        #print("Monitoring logged")
+
+    def goose_analyser_list(self, dpid, pkt):
+        #os.system('clear')
+        #entries = []
+        entries = {}
+        packets = {}
+        
+        item_size = pkt.entry.key_size + pkt.entry.value_size
+        fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
+
+        print("GOOSE Analyser \n")
+        for i in range(pkt.n_items):
+            key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
+            #entries.append((key.hex(), value.hex()))   
+            entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
+            packets[i] = entries
+            print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", stNum: " + (str(value.hex()))[:8] + ", sqNum: " + (str(value.hex()))[-8:]) 
+            #storage.asset_discovery[str(key.hex())] = str(value.hex())    
+            
+        #storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
+        #print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
+        #self.assetDiscoveryCache.tablesDict[""] = entries 
+        #print("GAN: " + str(packets))
 
 
     def asset_disc_list(self, dpid, pkt):
@@ -166,7 +193,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
         #print(eBPFCLIApplication.get_switch_name(dpid) + ": " + str(key.hex()) + ", " + str(value.hex())) 
         #self.assetDiscoveryCache.tablesDict[""] = entries 
-        print("Table logged")
+        #print("Table logged")
         #tabulate(entries, headers=["Key", "Value"])
 
     #@app.get("/install")
@@ -378,6 +405,7 @@ def install_functions():
 def threaded_mon_timer():
     while True:
         storage.connections[6].send(TableListRequest(index=0, table_name="monitor"))
+        storage.connections[7].send(TableListRequest(index=0, table_name="goose_analyser"))
         #connection.send(TableListRequest(index=0, table_name="assetdisc"))
         print("Sending monitoring request")
         time.sleep(1)
@@ -447,6 +475,13 @@ def install():
             start_monitoring()
             time.sleep(1)
             print("Monitoring service installed...")         
+
+        with open('../functions/goose_analyser.o', 'rb') as f:
+            print("Installing GOOSE analyser service...")
+            elf = f.read() 
+            storage.connections[7].send(FunctionAddRequest(name="goose_analyser", index=0, elf=elf)) #0   
+            time.sleep(1)
+            print("GOOSE analyser service installed...")    
 
         time.sleep(1)
         print("All functions installed...")
