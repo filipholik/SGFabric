@@ -66,7 +66,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #print(int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")) # Packets 
         value_bytes = int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little") 
         value_packets = int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")
-        print(str(value_packets) + "," + str(value_bytes))
+        #print(str(value_packets) + "," + str(value_bytes))
         return str(value_packets) + "," + str(value_bytes)
 
     @set_event_handler(Header.TABLES_LIST_REPLY)
@@ -159,7 +159,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         item_size = pkt.entry.key_size + pkt.entry.value_size
         fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
 
-        print("GOOSE Analyser \n")
+        print("GOOSE Analyser")
         for i in range(pkt.n_items):
             key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
             #entries.append((key.hex(), value.hex()))   
