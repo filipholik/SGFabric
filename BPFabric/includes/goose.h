@@ -21,42 +21,42 @@
 #include <linux/types.h>
 
 /*
- *	IEEE 802.3 Ethernet magic constants.  The frame sizes omit the preamble
- *	and FCS/CRC (frame check sequence).
+ *	GOOSE frame magic constants. 
  */
 
 #define APPID	2		/* Octets in one ethernet addr	 */
 #define LEN	2		/* Total octets in header.	 */
 #define RESERVED	4		/* Min. octets in frame sans FCS */
-#define GO_CB_REF	2		/* Max. octets in payload	 */
+#define GO_CB_REF	32		/* Max. octets in payload	 */
 #define TTL	2		/* Max. octets in frame sans FCS */
-#define DAT_SET	2		/* Octets in the FCS		 */
-#define GID	2		/* Octets in the FCS		 */
+#define DAT_SET	32		/* Octets in the FCS		 */
+#define GID	32		/* Octets in the FCS		 */
 #define T	8		/* Octets in the FCS		 */
 #define ST_NUM	1		/* Octets in the FCS		 */
 #define SQ_NUM	1		/* Octets in the FCS		 */
-
+#define PADDING	3		/* Octets in the FCS		 */
 
 struct goose_hdr {
-	//unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
-	//unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
-	//__be16		h_proto;		/* packet type ID field	*/    
     __u16 app_id; 
     __u16 length;
     __u16 reserved1;
     __u16 reserved2; 
-} __attribute__((packed));
+    //unsigned char padding[PADDING];
+}; 
 
 
 struct goose_apdu {
-    __u16 go_cb_ref; 
+    unsigned char go_cb_ref[GO_CB_REF]; 
     __u16 ttl;
-    __u16 dat_set;
-    __u16 gid; 
+    unsigned char dat_set[DAT_SET];
+    unsigned char gid[GID]; 
     __u64 t; 
     __u8 st_num; 
     __u8 sq_num; 
-} __attribute__((packed));
+};
+
+//unsigned char t[T]; // __u64 t; 
+//    unsigned char padding[PADDING];
 
 
 
