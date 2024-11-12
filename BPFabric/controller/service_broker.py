@@ -21,14 +21,14 @@ class storage():
     connections = {}
     status = {"status" : "Unknown"}
     cache = {}
-    log = {str(datetime.datetime.now()): "Service Provider started"}
+    log = {str(datetime.datetime.now()): "Service Broker started"}
     asset_discovery = {} # dpid: mac : bytes : packets
     monitoring = {} # mac : bytes
     eBPFApp = None
 
 class eBPFCLIApplication(eBPFCoreApplication):
     """
-        Controller application that will start a interactive CLI.
+        Service broker for the controller that provides an abstraction between the application and data plane layers. 
     """
     #assetDiscoveryCache = tablesCache() 
 
@@ -195,80 +195,18 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #self.assetDiscoveryCache.tablesDict[""] = entries 
         #print("Table logged")
         #tabulate(entries, headers=["Key", "Value"])
-
-    #@app.get("/install")
-    #def install_functions():    
-        #eBPFApp.install()
-        #return '<h2> Installing functions to the nodes... <br/> <a href="http://localhost:5085/index"> Back </a> </h2>'
-        #return json.dumps(list(storage.connected_devices))
-    
-    # NOT USED!
-    def install(self): 
-        log = ""
-        print(f'Installing SGSim orchestration functions...')
-        log += 'Installing SGSim orchestration functions... \n' 
-        if(len(self.application.connections) == 9): 
-            print(f'All networking device connected. ')
-            log += f'All networking device connected. \n'
-            with open('../functions/learningswitch.o', 'rb') as f:
-                print("Installing forwarding services...")
-                elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
-                self.application.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
-                self.application.connections[2].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS2
-                self.application.connections[3].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-                self.application.connections[4].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-                self.application.connections[5].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-                self.application.connections[6].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSGW
-                self.application.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSRS
-                self.application.connections[8].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSHV
-                self.application.connections[9].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
-                time.sleep(1)    
-                print("All forwarding services installed...")            
-
-            with open('../functions/mirror.o', 'rb') as f:
-                print("Installing mirroring service...")
-                elf = f.read() 
-                self.application.connections[1].send(FunctionAddRequest(name="mirror", index=0, elf=elf)) # DSS1                
-                time.sleep(1)
-                print("Mirroring service installed...")
-
-            with open('../functions/block.o', 'rb') as f:
-                print("Installing ACL service...")
-                elf = f.read() 
-                self.application.connections[6].send(FunctionAddRequest(name="acl", index=0, elf=elf))                 
-                time.sleep(1)
-                print("ACL service installed...")                
-
-            with open('../functions/assetdisc.o', 'rb') as f:
-                print("Installing Asset Discovery service...")
-                elf = f.read() 
-                self.application.connections[7].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))   
-                self.application.connections[8].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
-                self.application.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
-                self.application.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
-                time.sleep(1)
-                print("ACL service installed...")              
-
-            time.sleep(1)
-            print("All functions installed...")
-            storage.status["functions"] = ("Functions installed")
-        else: 
-            print(f'Could not verify connected devices. ')
-            storage.status["functions"] = ("Functions not installed")
-        
-        storage.log[str(datetime.datetime.now())] = log 
-        storage.log[str(datetime.datetime.now())] = "All functions installed. "
-
+ 
     @set_event_handler(Header.NOTIFY)
     def notify_event(self, connection, pkt):        
-        #print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
-        #print(pkt.data.hex())
+        print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
+        print(pkt.data.hex())
+        
         vendor = ''
         if pkt.data.hex() == '30b216000004':
             vendor = 'Hitachi'
         if pkt.data.hex() == 'b4b15a000001':
             vendor = 'Siemens'  
-        #print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')
+        #print(f'\n[{eBPFCLIApplication.get_switch_name(connection.dpid)}] IED device detected with MAC: {pkt.data.hex()} ({vendor})')    
         connection.send(TableListRequest(index=0, table_name="assetdisc"))
         connection.send(TableListRequest(index=1, table_name="assetdisc")) # For the DoS service! 
         #connection.send(TableListRequest(index=0, table_name="monitor"))
@@ -332,6 +270,7 @@ def start():
 }
 
 #content{
+  background-color: #ddd;
   display:none;
 }
 </style>
@@ -349,6 +288,7 @@ def start():
                 if (width >= 100) {
                     clearInterval(id);
                     document.getElementById('content').style.display = 'block'; 
+                    document.getElementById('myProgress').style.display = 'none'; 
                     i = 0;
                 } else {
                     width++;
@@ -364,10 +304,9 @@ def start():
 
 <body>
 
-<h1>Connecting to the nodes... </h1>
-
 <div id="myProgress">
-  <div id="myBar">10%</div>
+    <h1>Connecting to the nodes... </h1>
+    <div id="myBar">10%</div>
 </div>
 
 <div id="content">
@@ -491,16 +430,6 @@ def install():
         print(f'Could not verify connected devices. ')
         storage.status["functions"] = ("Functions not installed")
         storage.log[str(datetime.datetime.now())] = "Functions installation failed"
-    
-
-#class LearningSwitchApplication(eBPFCoreApplication):
-    #@set_event_handler(Header.HELLO)
-    #def hello(self, connection, pkt):
-        #self.mac_to_port = {}
-
-        #with open('../functions/learningswitch.o', 'rb') as f:
-            #print("Installing the eBPF ELF")
-            #connection.send(FunctionAddRequest(name="learningswitch", index=0, elf=f.read()))
 
 if __name__ == '__main__':
     #LearningSwitchApplication().run()
