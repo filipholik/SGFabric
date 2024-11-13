@@ -12,6 +12,7 @@ import json
 import time
 
 import datetime
+from enum import Enum
 
 app = Flask(__name__)
 #global eBPFApp
@@ -25,6 +26,30 @@ class storage():
     asset_discovery = {} # dpid: mac : bytes : packets
     monitoring = {} # mac : bytes
     eBPFApp = None
+
+class NF(Enum): 
+    FORWARDING = 1
+    MIRRORING = 2
+    ACL = 3
+    ASSET_DISCOVERY = 4
+    DOS_MITIGATION = 5
+    MONITORING = 6
+    GOOSE_ANALYSER = 7
+
+class testingFrontEnd():
+    devicesPipelines = {
+        1 : [NF.MIRRORING.value, NF.FORWARDING.value], # DSS1
+        2 : [NF.ASSET_DISCOVERY.value, NF.FORWARDING.value],  # DSS2
+        3 : [NF.FORWARDING.value],  # C
+        4 : [NF.FORWARDING.value],  # C
+        5 : [NF.FORWARDING.value],  # C
+        6 : [NF.MONITORING.value, NF.ACL.value, NF.FORWARDING.value],  # DPSGW
+        7 : [NF.GOOSE_ANALYSER.value, NF.ASSET_DISCOVERY.value, NF.FORWARDING.value],  # DPSRS
+        8 : [NF.ASSET_DISCOVERY.value, NF.FORWARDING.value],  # DPSHV
+        9 : [NF.ASSET_DISCOVERY.value, NF.FORWARDING.value]  # DPSGW
+    }
+# TODO - specify indexes for NFs
+
 
 class eBPFCLIApplication(eBPFCoreApplication):
     """
@@ -251,12 +276,17 @@ def start():
     storage.eBPFApp = eBPFCLIApplication().run()
     storage.status["status"] = "Nodes connected"    
     #return '<h2> Connecting to the nodes... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h2>'
-    return """\
+    return loading_bar("Connecting to the nodes... ", 50)
+
+
+def loading_bar(headline, frames): 
+        return """\
         <!DOCTYPE html>
 <html>
 <style>
 #myProgress {
   width: 100%;
+  text-align: center;
   background-color: #ddd;
 }
 
@@ -271,6 +301,7 @@ def start():
 
 #content{
   background-color: #ddd;
+  text-align: center;
   display:none;
 }
 </style>
@@ -283,7 +314,7 @@ def start():
             i = 1;
             var elem = document.getElementById("myBar");
             var width = 10;
-            var id = setInterval(frame, 35);
+            var id = setInterval(frame, """ + str(frames) + """);
             function frame() {
                 if (width >= 100) {
                     clearInterval(id);
@@ -305,12 +336,12 @@ def start():
 <body>
 
 <div id="myProgress">
-    <h1>Connecting to the nodes... </h1>
+    <h1>""" + headline + """</h1>
     <div id="myBar">10%</div>
 </div>
 
 <div id="content">
-    <h1>Connected</h1>
+    <h1>Finished</h1>
     <h1><a href="http://127.0.0.1:5000/index"> Back </a></h1>
 </div>
 
@@ -318,6 +349,7 @@ def start():
 </html>
 
 """
+
 
 @app.get("/status")
 def get_status():    
@@ -337,8 +369,11 @@ def refresh_asset_discovery():
 @app.get("/install")
 def install_functions():    
     #storage.eBPFApp.install()
-    install()
-    return '<h1> All functions installed... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h1>'
+    installThread = Thread(target=install)
+    installThread.start()    
+    return loading_bar("Installing functions... ", 100)
+    
+    #return '<h1> All functions installed... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h1>'
     #return json.dumps(list(storage.connected_devices))
 
 def threaded_mon_timer():
@@ -354,7 +389,7 @@ def start_monitoring():
     thread.start() 
 
 def install(): 
-    print(f'Installing SGSim orchestration functions...')
+    print(f'Installing SGSim orchestration functions...')    
     storage.log[str(datetime.datetime.now())] = "Installation of functions started"
     if(len(storage.connected_devices) == 9): 
         print(f'All networking device connected. ')
