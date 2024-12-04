@@ -1,0 +1,31 @@
+
+// Before the attack 
+*** Ping: testing ping reachability
+H1 -> H2 H3 H4 H5 H6 H7 H8 SERVER 
+H2 -> H1 H3 H4 H5 H6 H7 H8 SERVER 
+H3 -> H1 H2 H4 H5 H6 H7 H8 SERVER 
+H4 -> H1 H2 H3 H5 H6 H7 H8 SERVER 
+H5 -> H1 H2 H3 H4 H6 H7 H8 SERVER 
+H6 -> H1 H2 H3 H4 H5 H7 H8 SERVER 
+H7 -> H1 H2 H3 H4 H5 H6 H8 SERVER 
+H8 -> H1 H2 H3 H4 H5 H6 H7 SERVER 
+SERVER -> H1 H2 H3 H4 H5 H6 H7 H8 
+*** Results: 0% dropped (72/72 received)
+
+// Mitigation on D4 
+*** Ping: testing ping reachability
+H1 -> H2 H3 H4 H5 H6 X X X 
+H2 -> H1 H3 H4 H5 H6 X X X 
+H3 -> H1 H2 H4 H5 H6 H7 H8 SERVER 
+H4 -> H1 H2 H3 H5 H6 X X X 
+H5 -> H1 H2 H3 H4 H6 H7 H8 SERVER 
+H6 -> H1 H2 H3 H4 H5 X X X 
+H7 -> X X H3 X H5 X H8 SERVER 
+H8 -> X X H3 X H5 X H7 SERVER 
+SERVER -> X X H3 X H5 X H7 H8 
+*** Results: 33% dropped (48/72 received)
+
+Mitigating DDoS against: 000000000001 with throughput: 1.0Mbps
+Mitigating DDoS against: 000000000002 with throughput: 1.0Mbps
+Mitigating DDoS against: 000000000006 with throughput: 1.0Mbps
+Mitigating DDoS against: 000000000004 with throughput: 1.0Mbps
