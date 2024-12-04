@@ -29,3 +29,32 @@ Mitigating DDoS against: 000000000001 with throughput: 1.0Mbps
 Mitigating DDoS against: 000000000002 with throughput: 1.0Mbps
 Mitigating DDoS against: 000000000006 with throughput: 1.0Mbps
 Mitigating DDoS against: 000000000004 with throughput: 1.0Mbps
+
+//Mitigation on D4 + access layer switches
+*** Ping: testing ping reachability
+H1 -> X X X X X X X X 
+H2 -> X X X X X X X X 
+H3 -> X X X H5 X H7 H8 SERVER 
+H4 -> X X X X X X X X 
+H5 -> X X H3 X X H7 H8 SERVER 
+H6 -> X X X X X X X X 
+H7 -> X X H3 X H5 X H8 SERVER 
+H8 -> X X H3 X H5 X H7 SERVER 
+SERVER -> X X H3 X H5 X H7 H8 
+*** Results: 72% dropped (20/72 received)
+
+
+Not mitigated:
+--- 10.10.10.10 ping statistics ---
+49 packets transmitted, 49 received, 0% packet loss, time 48657ms
+rtt min/avg/max/mdev = 0.260/3.060/27.530/4.867 ms
+
+Mitigated on access layer (attack ongoing): 
+50 packets transmitted, 50 received, 0% packet loss, time 49301ms
+rtt min/avg/max/mdev = 0.347/2.163/18.587/2.845 ms
+
+Baseline (unloaded): 
+50 packets transmitted, 50 received, 0% packet loss, time 49480ms
+rtt min/avg/max/mdev = 0.305/1.517/4.080/0.878 ms
+
+
