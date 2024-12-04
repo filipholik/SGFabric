@@ -17,6 +17,8 @@ from enum import Enum
 app = Flask(__name__)
 #global eBPFApp
 
+DDOS_MITIGATION_THRESHOLD = 1000000 #1Mbps
+
 class storage():
     connected_devices = set()
     connections = {}
@@ -136,6 +138,10 @@ class eBPFCLIApplication(eBPFCoreApplication):
 
         #tabulate(entries, headers=["Key", "Value"])
 
+    @set_event_handler(Header.TABLE_ENTRY_INSERT_REPLY)
+    def table_entry_get_reply(self, connection, pkt):
+        print("Table insert reply received: " + str(pkt))
+
     @set_event_handler(Header.TABLE_ENTRY_GET_REPLY)
     def table_entry_get_reply(self, connection, pkt):
         #tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
@@ -164,8 +170,14 @@ class eBPFCLIApplication(eBPFCoreApplication):
             bandwidth = int(bytesTotal) - int(storage.monitoring[key])
             storage.monitoring[key] = int(bytesTotal)
 
+            bandwidth *= 8; #Bytes to bits 
+            if bandwidth > DDOS_MITIGATION_THRESHOLD and str(key.hex()) != "000000000010": # Server MAC 000000000010
+                self.mitigate_ddos(key, bandwidth)
+
             if bandwidth > 0: 
                 f.write(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
+                print(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
+
 
             #entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
             #packets[i] = entries
@@ -176,6 +188,14 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #f.write(str("--- \n"))
         f.close()
         #print("Monitoring logged")
+
+    def mitigate_ddos(self, eth_src, value): 
+        throughputMbps = value/1000000; 
+        print("Mitigating DDoS against: " + str(eth_src.hex()) + " with throughput: " + str(round(throughputMbps,2)) + "Mbps")
+        print(eth_src)
+        print(int.to_bytes(int(round(throughputMbps,0))))
+        storage.connections[6].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D4
+
 
     def goose_analyser_list(self, dpid, pkt):
         #os.system('clear')
@@ -224,7 +244,8 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #tabulate(entries, headers=["Key", "Value"])
  
     @set_event_handler(Header.NOTIFY)
-    def notify_event(self, connection, pkt):        
+    def notify_event(self, connection, pkt):    
+        return    
         print(f'\n[{connection.dpid}] Received notify event {pkt.id}, data length {pkt.data}')
         print(pkt.data.hex())
         
@@ -368,6 +389,12 @@ def get_status():
 def refresh_asset_discovery():    
     return json.dumps(list(storage.connected_devices))
 
+@app.get("/ddosm")
+def install_ddosm():    
+    installThread = Thread(target=install_ddosm)
+    installThread.start()    
+    return loading_bar("Installing mitigation functions... ", 10)
+
 @app.get("/install")
 def install_functions():    
     #storage.eBPFApp.install()
@@ -380,15 +407,22 @@ def install_functions():
 
 def threaded_mon_timer():
     while True:
-        storage.connections[6].send(TableListRequest(index=0, table_name="monitor"))
-        storage.connections[7].send(TableListRequest(index=0, table_name="goose_analyser"))
+        storage.connections[6].send(TableListRequest(index=1, table_name="monitor")) #D4 
+        #storage.connections[7].send(TableListRequest(index=0, table_name="goose_analyser"))
         #connection.send(TableListRequest(index=0, table_name="assetdisc"))
-        print("Sending monitoring request")
+        #print("Sending monitoring request")
         time.sleep(1)
 
 def start_monitoring():
     thread = Thread(target = threaded_mon_timer, args = ())
     thread.start() 
+
+def install_ddosm():
+    with open('../functions/ddos_mitigation.o', 'rb') as f:
+            print("Installing Denial of Service Prevention service...")
+            elf = f.read() 
+            storage.connections[8].send(FunctionAddRequest(name="ddos", index=0, elf=elf)) #0               
+            print("Denial of Service Prevention service installed...")  
 
 def install(): 
     print(f'Installing SGSim orchestration functions...')    
@@ -398,16 +432,16 @@ def install():
         with open('../functions/forwarding.o', 'rb') as f:
             print("Installing forwarding services...")
             elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
-            storage.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
-            storage.connections[2].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS2
-            storage.connections[3].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-            storage.connections[4].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-            storage.connections[5].send(FunctionAddRequest(name="learningswitch", index=0, elf=elf)) # C
-            storage.connections[6].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSGW
-            storage.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSRS
-            storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # DPSHV #1
-            storage.connections[9].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
-            storage.connections[10].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DPSMV
+            storage.connections[1].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # C1                
+            storage.connections[2].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # C2
+            storage.connections[3].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # D1
+            storage.connections[4].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # D2
+            storage.connections[5].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # D3
+            storage.connections[6].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # D4
+            storage.connections[7].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A1
+            storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A2
+            storage.connections[9].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A3
+            storage.connections[10].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A4
             time.sleep(1)    
             print("All forwarding services installed...")   
             # return         
@@ -444,10 +478,17 @@ def install():
             time.sleep(1)
             print("Denial of Service Prevention service installed...")     
 
+        with open('../functions/ddos_auto_mitigation.o', 'rb') as f:
+            print("Installing Automated Distributed Denial of Service Mitigation service...")
+            elf = f.read() 
+            storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0   
+            time.sleep(1)
+            print("Automated Distributed Denial of Service Mitigation service installed...") 
+
         with open('../functions/monitoring.o', 'rb') as f:
             print("Installing Monitoring service...")
             elf = f.read() 
-            #storage.connections[6].send(FunctionAddRequest(name="monitor", index=0, elf=elf)) #0   
+            storage.connections[6].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
             #storage.connections[7].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
             start_monitoring()
             time.sleep(1)
