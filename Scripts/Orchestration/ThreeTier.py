@@ -23,7 +23,7 @@ def smartGridSimNetwork():
 
     info( '\n*** ************************************* *** \n' )
     info( '*** Starting Three Tier Topology *** \n' )    
-    info( '*** Version: 241203 \n' )
+    info( '*** Version: 241204 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     #info( '*** Adding controller\n' )
@@ -108,11 +108,11 @@ def smartGridSimNetwork():
 
     info( '*** Preparing custom scripts \n')
     CLI.do_orch_measure = orch_measure
+    CLI.do_orch_rtt = orch_rtt
     CLI.do_orch_attack_ddos = orch_attack_ddos
     CLI.do_orch_attack_dos = orch_attack_dos
     info( '*** Three Tier Topology Started *** \n' )
     CLI(net)
-
     net.stop()
 
 def orch_attack_ddos(self, line):
@@ -137,6 +137,12 @@ def orch_measure(self, line):
     net.get('SERVER').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "SERVER-Service" -e "iperf -s;bash"&') 
     time.sleep(1)
     net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "iperf -c 10.10.10.10;bash"&') 
+
+def orch_rtt(self, line):
+    "Starts RTT measurement." 
+    net = self.mn  
+    info('Starting RTT measurement... \n')   
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
