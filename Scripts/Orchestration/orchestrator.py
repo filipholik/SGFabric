@@ -192,9 +192,13 @@ class eBPFCLIApplication(eBPFCoreApplication):
     def mitigate_ddos(self, eth_src, value): 
         throughputMbps = value/1000000; 
         print("Mitigating DDoS against: " + str(eth_src.hex()) + " with throughput: " + str(round(throughputMbps,2)) + "Mbps")
-        print(eth_src)
-        print(int.to_bytes(int(round(throughputMbps,0))))
+        #print(eth_src)
+        #print(int.to_bytes(int(round(throughputMbps,0))))
         storage.connections[6].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D4
+        storage.connections[7].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A1
+        storage.connections[8].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A2
+        storage.connections[9].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A3
+        storage.connections[10].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A4
 
 
     def goose_analyser_list(self, dpid, pkt):
@@ -480,8 +484,12 @@ def install():
 
         with open('../functions/ddos_auto_mitigation.o', 'rb') as f:
             print("Installing Automated Distributed Denial of Service Mitigation service...")
-            elf = f.read() 
+            elf = f.read()             
             storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0   
+            storage.connections[7].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
+            storage.connections[8].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
+            storage.connections[9].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
+            storage.connections[10].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
             time.sleep(1)
             print("Automated Distributed Denial of Service Mitigation service installed...") 
 
