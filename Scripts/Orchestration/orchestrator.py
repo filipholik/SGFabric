@@ -151,7 +151,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         entries = {}
         packets = {}
 
-        f = open("monitoring_logg.txt", "a")      
+        #f = open("monitoring_logg.txt", "a")      
 
         timestamp = str(datetime.datetime.now())        
         #f.write(str(timestamp) + "\n")
@@ -171,11 +171,11 @@ class eBPFCLIApplication(eBPFCoreApplication):
             storage.monitoring[key] = int(bytesTotal)
 
             bandwidth *= 8; #Bytes to bits 
-            if bandwidth > DDOS_MITIGATION_THRESHOLD and str(key.hex()) != "000000000010": # Server MAC 000000000010
+            if ((bandwidth > DDOS_MITIGATION_THRESHOLD) and (str(key.hex()) != "000000000010")): # Server MAC 000000000010
                 self.mitigate_ddos(key, bandwidth)
 
             if bandwidth > 0: 
-                f.write(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
+                #f.write(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
                 print(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
 
 
@@ -186,7 +186,7 @@ class eBPFCLIApplication(eBPFCoreApplication):
         #storage.asset_discovery[eBPFCLIApplication.get_switch_name(dpid)] = packets
         #f.write(packets)
         #f.write(str("--- \n"))
-        f.close()
+        #f.close()
         #print("Monitoring logged")
 
     def mitigate_ddos(self, eth_src, value): 
@@ -194,6 +194,11 @@ class eBPFCLIApplication(eBPFCoreApplication):
         print("Mitigating DDoS against: " + str(eth_src.hex()) + " with throughput: " + str(round(throughputMbps,2)) + "Mbps")
         #print(eth_src)
         #print(int.to_bytes(int(round(throughputMbps,0))))
+        storage.connections[1].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        storage.connections[2].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        storage.connections[3].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        storage.connections[4].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        storage.connections[5].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
         storage.connections[6].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D4
         storage.connections[7].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A1
         storage.connections[8].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A2
@@ -484,7 +489,12 @@ def install():
 
         with open('../functions/ddos_auto_mitigation.o', 'rb') as f:
             print("Installing Automated Distributed Denial of Service Mitigation service...")
-            elf = f.read()             
+            elf = f.read()     
+            storage.connections[1].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C1                
+            storage.connections[2].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C2
+            storage.connections[3].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D1
+            storage.connections[4].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D2
+            storage.connections[5].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D3       
             storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0   
             storage.connections[7].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
             storage.connections[8].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
