@@ -23,7 +23,7 @@ def smartGridSimNetwork():
 
     info( '\n*** ************************************* *** \n' )
     info( '*** Starting Three Tier Topology *** \n' )    
-    info( '*** Version: 241204 \n' )
+    info( '*** Version: 241205 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     #info( '*** Adding controller\n' )
@@ -63,8 +63,8 @@ def smartGridSimNetwork():
     #WAN1 = {'bw':1000,'delay':'20ms','loss':1,'jitter':'10ms'} 
     #GBPS = {'delay':'18ms'} 
     MBPS = {'bw':1} 
-    MBPS10 = {'bw':10}
-    MBPS100 = {'bw':100}
+    MBPS10 = {'bw':2.5}
+    MBPS100 = {'bw':10}
 
     info( '*** Adding links\n')
     net.addLink(H1, A1, cls=TCLink , **MBPS)
@@ -142,7 +142,10 @@ def orch_rtt(self, line):
     "Starts RTT measurement." 
     net = self.mn  
     info('Starting RTT measurement... \n')   
-    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping 10.10.10.10;bash"&') 
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H5').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H7').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H8').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
