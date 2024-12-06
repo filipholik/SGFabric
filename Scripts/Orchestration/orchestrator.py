@@ -194,18 +194,18 @@ class eBPFCLIApplication(eBPFCoreApplication):
         print("Mitigating DDoS against: " + str(eth_src.hex()) + " with throughput: " + str(round(throughputMbps,2)) + "Mbps")
         #print(eth_src)
         #print(int.to_bytes(int(round(throughputMbps,0))))
-        storage.connections[1].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
-        storage.connections[2].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
-        storage.connections[3].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
-        storage.connections[4].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
-        storage.connections[5].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
-        storage.connections[6].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D4
+        #storage.connections[1].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        #storage.connections[2].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        #storage.connections[3].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        #storage.connections[4].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        #storage.connections[5].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # 
+        #storage.connections[6].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D4
         storage.connections[7].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A1
         storage.connections[8].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A2
         storage.connections[9].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A3
         storage.connections[10].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A4
-        storage.connections[11].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D6
-        storage.connections[12].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A5
+        #storage.connections[11].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D6
+        #storage.connections[12].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A5
 
     def goose_analyser_list(self, dpid, pkt):
         #os.system('clear')
@@ -493,18 +493,18 @@ def install():
         with open('../functions/ddos_auto_mitigation.o', 'rb') as f:
             print("Installing Automated Distributed Denial of Service Mitigation service...")
             elf = f.read()     
-            storage.connections[1].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C1                
-            storage.connections[2].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C2
-            storage.connections[3].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D1
-            storage.connections[4].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D2
-            storage.connections[5].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D3       
-            storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D4   
+            #storage.connections[1].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C1                
+            #storage.connections[2].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # C2
+            #storage.connections[3].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D1
+            #storage.connections[4].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D2
+            #storage.connections[5].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D3       
+            #storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D4   
             storage.connections[7].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A1 
             storage.connections[8].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A2 
             storage.connections[9].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A3 
             storage.connections[10].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A4 
-            storage.connections[11].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D5 
-            storage.connections[12].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A5 
+            #storage.connections[11].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D5 
+            #storage.connections[12].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A5 
             time.sleep(1)
             print("Automated Distributed Denial of Service Mitigation service installed...") 
 
