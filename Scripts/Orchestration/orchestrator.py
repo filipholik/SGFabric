@@ -17,7 +17,7 @@ from enum import Enum
 app = Flask(__name__)
 #global eBPFApp
 
-DDOS_MITIGATION_THRESHOLD = 1000000 #1Mbps
+DDOS_MITIGATION_THRESHOLD = 1000000 # 1000000 = 1Mbps
 
 class storage():
     connected_devices = set()
@@ -204,7 +204,8 @@ class eBPFCLIApplication(eBPFCoreApplication):
         storage.connections[8].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A2
         storage.connections[9].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A3
         storage.connections[10].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A4
-
+        storage.connections[11].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # D6
+        storage.connections[12].send(TableEntryInsertRequest(table_name="blacklist", key=eth_src, value=int.to_bytes(int(round(throughputMbps,0))))) # A5
 
     def goose_analyser_list(self, dpid, pkt):
         #os.system('clear')
@@ -416,7 +417,7 @@ def install_functions():
 
 def threaded_mon_timer():
     while True:
-        storage.connections[6].send(TableListRequest(index=1, table_name="monitor")) #D4 
+        storage.connections[11].send(TableListRequest(index=1, table_name="monitor")) #D4 
         #storage.connections[7].send(TableListRequest(index=0, table_name="goose_analyser"))
         #connection.send(TableListRequest(index=0, table_name="assetdisc"))
         #print("Sending monitoring request")
@@ -436,7 +437,7 @@ def install_ddosm():
 def install(): 
     print(f'Installing SGSim orchestration functions...')    
     storage.log[str(datetime.datetime.now())] = "Installation of functions started"
-    if(len(storage.connected_devices) == 10): 
+    if(len(storage.connected_devices) == 12): 
         print(f'All networking device connected. ')
         with open('../functions/forwarding.o', 'rb') as f:
             print("Installing forwarding services...")
@@ -451,6 +452,8 @@ def install():
             storage.connections[8].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A2
             storage.connections[9].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A3
             storage.connections[10].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A4
+            storage.connections[11].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A4
+            storage.connections[12].send(FunctionAddRequest(name="learningswitch", index=2, elf=elf)) # A4
             time.sleep(1)    
             print("All forwarding services installed...")   
             # return         
@@ -495,18 +498,20 @@ def install():
             storage.connections[3].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D1
             storage.connections[4].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D2
             storage.connections[5].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) # D3       
-            storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0   
-            storage.connections[7].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
-            storage.connections[8].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
-            storage.connections[9].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
-            storage.connections[10].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #0 
+            storage.connections[6].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D4   
+            storage.connections[7].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A1 
+            storage.connections[8].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A2 
+            storage.connections[9].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A3 
+            storage.connections[10].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A4 
+            storage.connections[11].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #D5 
+            storage.connections[12].send(FunctionAddRequest(name="blacklist", index=0, elf=elf)) #A5 
             time.sleep(1)
             print("Automated Distributed Denial of Service Mitigation service installed...") 
 
         with open('../functions/monitoring.o', 'rb') as f:
             print("Installing Monitoring service...")
             elf = f.read() 
-            storage.connections[6].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
+            storage.connections[11].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
             #storage.connections[7].send(FunctionAddRequest(name="monitor", index=1, elf=elf)) #0   
             start_monitoring()
             time.sleep(1)

@@ -22,8 +22,8 @@ def smartGridSimNetwork():
                    switch = eBPFSwitch)
 
     info( '\n*** ************************************* *** \n' )
-    info( '*** Starting Three Tier Topology *** \n' )    
-    info( '*** Version: 241205 \n' )
+    info( '*** Starting Three Tier Model Topology *** \n' )    
+    info( '*** Version: 241206 \n' )
     info( '*** Author: filip.holik@glasgow.ac.uk  \n' )
     info( '*** ************************************* *** \n' )
     #info( '*** Adding controller\n' )
@@ -47,6 +47,8 @@ def smartGridSimNetwork():
     A2 = net.addSwitch('A2', switch_path=switchPath, dpid=8) 
     A3 = net.addSwitch('A3', switch_path=switchPath, dpid=9) 
     A4 = net.addSwitch('A4', switch_path=switchPath, dpid=10) 
+    D5 = net.addSwitch('D5', switch_path=switchPath, dpid=11) 
+    A5 = net.addSwitch('A5', switch_path=switchPath, dpid=12) 
 
     info( '*** Starting hosts \n')
     H1 = net.addHost('H1', cls=eBPFHost, ip='10.0.0.1', defaultRoute='10.10.10.10',mac='00:00:00:00:00:01')
@@ -86,7 +88,9 @@ def smartGridSimNetwork():
     net.addLink(D4, C2, cls=TCLink , **MBPS10)
 
     net.addLink(C1, C2, cls=TCLink , **MBPS100)
-    net.addLink(D4, SERVER, cls=TCLink , **MBPS10)
+    net.addLink(C2, D5, cls=TCLink , **MBPS100)
+    net.addLink(D5, A5, cls=TCLink , **MBPS100)
+    net.addLink(A5, SERVER, cls=TCLink , **MBPS100)
 
     info( '*** Starting network\n')
     net.build()
@@ -105,6 +109,8 @@ def smartGridSimNetwork():
     net.get('A2').start([])
     net.get('A3').start([])
     net.get('A4').start([])
+    net.get('D5').start([])
+    net.get('A5').start([])
 
     info( '*** Preparing custom scripts \n')
     CLI.do_orch_measure = orch_measure
@@ -123,6 +129,7 @@ def orch_attack_ddos(self, line):
     net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-DDOS" -e "sudo hping3 -S --flood 10.10.10.10;bash"&') 
     net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-DDOS" -e "sudo hping3 -S --flood 10.10.10.10;bash"&') 
     net.get('H6').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H6-DDOS" -e "sudo hping3 -S --flood 10.10.10.10;bash"&') 
+    net.get('H7').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H7-DDOS" -e "sudo hping3 -S --flood 10.10.10.10;bash"&') 
 
 def orch_attack_dos(self, line):
     "Starts the DoS attack to the server." 
@@ -143,9 +150,8 @@ def orch_rtt(self, line):
     net = self.mn  
     info('Starting RTT measurement... \n')   
     net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H5').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H7').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H8').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H5').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H5-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&')      
+    net.get('H8').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H8-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
