@@ -270,3 +270,38 @@ total:       15.02 Mb/s In    10.02 Mb/s Out -  34756.8 p/s In   23189.2 p/s Out
   D4-eth2:     0.00 Mb/s In     1.00 Mb/s Out -      1.2 p/s In    2316.2 p/s Out
   D5-eth1:     0.00 Mb/s In     0.00 Mb/s Out -      1.2 p/s In       0.2 p/s Out
   D5-eth2:     0.00 Mb/s In     0.00 Mb/s Out -      0.2 p/s In       1.2 p/s Out
+
+------ No mitigation --------
+
+total:       56.04 Mb/s In    56.04 Mb/s Out - 129718.4 p/s In  129718.4 p/s Out
+  A1-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.6 p/s In    2316.2 p/s Out
+  A1-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.2 p/s Out
+  A1-eth3:     2.00 Mb/s In     2.00 Mb/s Out -   4633.8 p/s In    4633.2 p/s Out
+  A2-eth1:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.4 p/s Out
+  A2-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.2 p/s Out
+  A2-eth3:     1.00 Mb/s In     1.00 Mb/s Out -   2316.6 p/s In    2316.6 p/s Out
+  A3-eth1:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.4 p/s Out
+  A3-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.2 p/s Out
+  A3-eth3:     1.00 Mb/s In     1.00 Mb/s Out -   2317.2 p/s In    2316.4 p/s Out
+  A4-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.2 p/s Out
+  A4-eth2:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.4 p/s Out
+  A4-eth3:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.4 p/s Out
+  A5-eth1:     5.00 Mb/s In     5.00 Mb/s Out -  11580.2 p/s In   11580.2 p/s Out
+  A5-eth2:     5.00 Mb/s In     5.00 Mb/s Out -  11580.2 p/s In   11580.2 p/s Out
+  C1-eth1:     2.00 Mb/s In     2.00 Mb/s Out -   4632.8 p/s In    4633.8 p/s Out
+  C1-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.6 p/s Out
+  C1-eth3:     3.00 Mb/s In     3.00 Mb/s Out -   6950.0 p/s In    6950.4 p/s Out
+  C2-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2317.2 p/s Out
+  C2-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.0 p/s In    2316.4 p/s Out
+  C2-eth3:     3.00 Mb/s In     3.00 Mb/s Out -   6950.4 p/s In    6950.0 p/s Out
+  C2-eth4:     5.00 Mb/s In     5.00 Mb/s Out -  11582.8 p/s In   11580.0 p/s Out
+  D1-eth1:     2.00 Mb/s In     2.00 Mb/s Out -   4633.2 p/s In    4633.8 p/s Out
+  D1-eth2:     2.00 Mb/s In     2.00 Mb/s Out -   4633.8 p/s In    4632.8 p/s Out
+  D2-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.6 p/s In    2316.6 p/s Out
+  D2-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.6 p/s In    2316.4 p/s Out
+  D3-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2317.2 p/s Out
+  D3-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2317.2 p/s In    2316.4 p/s Out
+  D4-eth1:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.4 p/s Out
+  D4-eth2:     1.00 Mb/s In     1.00 Mb/s Out -   2316.4 p/s In    2316.0 p/s Out
+  D5-eth1:     5.00 Mb/s In     5.00 Mb/s Out -  11580.0 p/s In   11582.8 p/s Out
+  D5-eth2:     5.00 Mb/s In     5.00 Mb/s Out -  11580.2 p/s In   11580.2 p/s Out
