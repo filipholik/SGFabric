@@ -49,8 +49,8 @@ def smartGridSimNetwork():
     A4 = net.addSwitch('A4', switch_path=switchPath, dpid=10) 
     D5 = net.addSwitch('D5', switch_path=switchPath, dpid=11) 
     A5 = net.addSwitch('A5', switch_path=switchPath, dpid=12) 
-    W1 = net.addSwitch('W1', switch_path=switchPath, dpid=12) 
-    W2 = net.addSwitch('W2', switch_path=switchPath, dpid=12) 
+    W1 = net.addSwitch('W1', switch_path=switchPath, dpid=13) 
+    W2 = net.addSwitch('W2', switch_path=switchPath, dpid=14) 
 
     info( '*** Starting hosts \n')
     H1 = net.addHost('H1', cls=eBPFHost, ip='10.0.0.1', defaultRoute='10.10.10.10',mac='00:00:00:00:00:01')
@@ -71,6 +71,11 @@ def smartGridSimNetwork():
     MBPS100 = {'bw':10}
 
     info( '*** Adding links\n')
+    net.addLink(C1, W1, cls=TCLink , **MBPS10)
+    net.addLink(C1, W2, cls=TCLink , **MBPS10)
+    net.addLink(W1, C2, cls=TCLink , **MBPS10)
+    net.addLink(W2, C2, cls=TCLink , **MBPS10)
+
     net.addLink(H1, A1, cls=TCLink , **MBPS)
     net.addLink(H2, A1, cls=TCLink , **MBPS)
     net.addLink(H3, A2, cls=TCLink , **MBPS)
@@ -92,12 +97,7 @@ def smartGridSimNetwork():
     #net.addLink(C1, C2, cls=TCLink , **MBPS100)
     net.addLink(C2, D5, cls=TCLink , **MBPS100)
     net.addLink(D5, A5, cls=TCLink , **MBPS100)
-    net.addLink(A5, SERVER, cls=TCLink , **MBPS100)
-
-    net.addLink(C1, W1, cls=TCLink , **MBPS10)
-    net.addLink(C1, W2, cls=TCLink , **MBPS10)
-    net.addLink(W1, C2, cls=TCLink , **MBPS10)
-    net.addLink(W2, C2, cls=TCLink , **MBPS10)
+    net.addLink(A5, SERVER, cls=TCLink , **MBPS100)    
 
     info( '*** Starting network\n')
     net.build()
@@ -159,8 +159,8 @@ def orch_rtt_1(self, line):
     "Starts RTT measurement." 
     net = self.mn  
     info('Starting RTT measurement 1... \n')   
-    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&')      
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&')      
     #net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
 
@@ -170,8 +170,8 @@ def orch_rtt_2(self, line):
     info('Starting RTT measurement 2... \n')   
     #net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&')      
-    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
