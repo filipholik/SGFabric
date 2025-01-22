@@ -159,8 +159,9 @@ def orch_rtt_1(self, line):
     "Starts RTT measurement." 
     net = self.mn  
     info('Starting RTT measurement 1... \n')   
-    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&')      
+    # 10000 = 0.81 Mbps
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&')      
     #net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
 
@@ -170,8 +171,8 @@ def orch_rtt_2(self, line):
     info('Starting RTT measurement 2... \n')   
     #net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&')      
-    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 12000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
