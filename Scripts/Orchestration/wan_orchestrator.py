@@ -18,6 +18,7 @@ app = Flask(__name__)
 #global eBPFApp
 
 DDOS_MITIGATION_THRESHOLD = 750000 # 1000000 = 1Mbps
+LOAD_BALANCER_THRESHOLD = 2000000 # 1000000 = 1Mbps
 
 class storage():
     connected_devices = set()
@@ -159,6 +160,8 @@ class eBPFCLIApplication(eBPFCoreApplication):
         item_size = pkt.entry.key_size + pkt.entry.value_size
         fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
 
+        aggregated_bw = 0 
+
         for i in range(pkt.n_items):
             key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
             #entries.append((key.hex(), value.hex()))   
@@ -171,15 +174,19 @@ class eBPFCLIApplication(eBPFCoreApplication):
             storage.monitoring[key] = int(bytesTotal)
 
             bandwidth *= 8; #Bytes to bits 
-            if ((bandwidth > DDOS_MITIGATION_THRESHOLD) and (str(key.hex()) != "000000000010")): # Server MAC 000000000010
+            if(str(key.hex()) != "000000000010"): # Server MAC 000000000010)
+                aggregated_bw += bandwidth
+            #if ((bandwidth > DDOS_MITIGATION_THRESHOLD) and (str(key.hex()) != "000000000010")): # Server MAC 000000000010
                 #self.mitigate_ddos(key, bandwidth)
-                self.load_balance()
+                #self.load_balance()
 
-
-            if bandwidth > 0: 
+            #if bandwidth > 0: 
                 #f.write(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
-                print(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
+                #print(str(timestamp) + ";" + str(key.hex()) + ";" + str(bandwidth) + "\n")
 
+        print(str(timestamp) + ";" + ";" + str(aggregated_bw) + "\n")
+        if aggregated_bw > LOAD_BALANCER_THRESHOLD: 
+            self.load_balance()
 
             #entries = {str(key.hex()) : eBPFCLIApplication.get_str_values(value)} # str(value.hex()
             #packets[i] = entries
@@ -197,11 +204,18 @@ class eBPFCLIApplication(eBPFCoreApplication):
             print("Installing ARP drop services...")
             elf = f.read() 
             storage.connections[14].send(FunctionAddRequest(name="arpdrop", index=0, elf=elf)) # W2
-        with open('../functions/load_balancer.o', 'rb') as f:
+        with open('../functions/load_balancer_1.o', 'rb') as f:
             print("Installing load balancing services...")
             elf = f.read() 
             storage.connections[1].send(FunctionAddRequest(name="loadbalancer", index=1, elf=elf)) # C1
-            storage.connections[2].send(FunctionAddRequest(name="loadbalancer", index=1, elf=elf)) # C2              
+        with open('../functions/load_balancer_2.o', 'rb') as f:
+            print("Installing load balancing services...")
+            elf = f.read() 
+            storage.connections[2].send(FunctionAddRequest(name="loadbalancer", index=1, elf=elf)) # C2  
+        #with open('../functions/wire.o', 'rb') as f:
+            #print("Installing wire service...")
+            #elf = f.read() 
+            #storage.connections[14].send(FunctionAddRequest(name="wire", index=2, elf=elf)) # DSS1               
         with open('../functions/forwarding.o', 'rb') as f:
             print("Installing forwarding services...")
             elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
@@ -479,6 +493,13 @@ def install():
             time.sleep(1)    
             print("All forwarding services installed...")   
             # return         
+
+        #with open('../functions/wire.o', 'rb') as f:
+            #print("Installing wire service...")
+            #elf = f.read() 
+            #storage.connections[13].send(FunctionAddRequest(name="wire", index=2, elf=elf)) # DSS1                
+            #time.sleep(1)
+            #print("Wire service installed...")
 
         with open('../functions/mirror.o', 'rb') as f:
             print("Installing mirroring service...")
