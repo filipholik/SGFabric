@@ -123,6 +123,7 @@ def smartGridSimNetwork():
 
     info( '*** Preparing custom scripts \n')
     CLI.do_orch_measure = orch_measure
+    CLI.do_orch_rtt = orch_rtt
     CLI.do_orch_rtt_1 = orch_rtt_1
     CLI.do_orch_rtt_2 = orch_rtt_2
     CLI.do_orch_attack_ddos = orch_attack_ddos
@@ -155,13 +156,26 @@ def orch_measure(self, line):
     time.sleep(1)
     net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "iperf -c 10.10.10.10;bash"&') 
 
-def orch_rtt_1(self, line):
+def orch_rtt(self, line):
     "Starts RTT measurement." 
     net = self.mn  
     info('Starting RTT measurement 1... \n')   
     # 10000 = 0.81 Mbps
-    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&')      
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -D -s 11000 -i 0.1 10.10.10.10>>h1.txt;bash"&') 
+    time.sleep(10)
+    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -D -s 12000 -i 0.1 10.10.10.10;bash"&')   
+    time.sleep(10)   
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
+    time.sleep(10)
+    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
+
+def orch_rtt_1(self, line):
+    "Starts RTT measurement." 
+    net = self.mn  
+    info('Starting RTT measurement 1... \n')   
+    # 10000 = 0.81 Mbps, 6400 = 0.5 Mbps
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -D -s 10000 -i 0.1 10.10.10.10>>h1.txt;bash"&') 
+    net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -D -s 10000 -i 0.1 10.10.10.10;bash"&')      
     #net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
 
@@ -171,8 +185,8 @@ def orch_rtt_2(self, line):
     info('Starting RTT measurement 2... \n')   
     #net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&') 
     #net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -s 6400 -i 0.1 10.10.10.10;bash"&')      
-    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
-    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -s 10000 -i 0.1 10.10.10.10;bash"&') 
+    net.get('H3').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H3-Client" -e "ping -D -s 10000 -i 0.1 10.10.10.10>>h3.txt;bash"&') 
+    net.get('H4').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H4-Client" -e "ping -D -s 10000 -i 0.1 10.10.10.10;bash"&') 
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
