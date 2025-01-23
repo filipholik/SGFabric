@@ -161,7 +161,10 @@ def orch_rtt(self, line):
     net = self.mn  
     info('Starting RTT measurement 1... \n')   
     # 10000 = 0.81 Mbps
-    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -D -s 11000 -i 0.1 10.10.10.10>>h1.txt;bash"&') 
+    net.get('W1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "W1-PacketCapture" -e "tcpdump -i W1-eth1 -w w1-pc.pcap;bash"&') 
+    net.get('W2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "W2-PacketCapture" -e "tcpdump -i W2-eth1 -w w2-pc.pcap;bash"&') 
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -D -s 11000 -i 1 10.10.10.10>>h1.txt;bash"&') 
+    net.get('H1').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H1-Client" -e "ping -D -s 10000 -i 0.1 10.10.10.10;bash"&') 
     time.sleep(10)
     net.get('H2').cmdPrint('xterm -geometry 90x30+10+10 -fa "Monospace" -fs 12 -T "H2-Client" -e "ping -D -s 12000 -i 0.1 10.10.10.10;bash"&')   
     time.sleep(10)   
