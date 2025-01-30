@@ -29,3 +29,4 @@ total:      474.75 Mb/s In   475.24 Mb/s Out -  39678.9 p/s In   40564.8 p/s Out
   wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -      8.5 p/s In       0.0 p/s Out
 
 DPDK switch 
+23x2x8 = 368 Mbps
