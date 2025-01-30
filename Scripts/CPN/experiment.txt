@@ -1,0 +1,31 @@
+Softswitch 
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0 
+sudo ping -s 65000 -i 0.00001 10.0.0.2
+cpu util around 11%
+ethstats
+total:      483.96 Mb/s In   484.44 Mb/s Out -  40451.3 p/s In   41351.3 p/s Out
+  enp1s0:   242.20 Mb/s In   242.70 Mb/s Out -  20446.3 p/s In   21357.5 p/s Out
+  enp2s0:   241.76 Mb/s In   241.74 Mb/s Out -  19993.6 p/s In   19993.3 p/s Out
+  enp3s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp4s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp5s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp6s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -     11.4 p/s In       0.5 p/s Out
+total:      482.51 Mb/s In   482.98 Mb/s Out -  40329.6 p/s In   41228.4 p/s Out
+  enp1s0:   241.50 Mb/s In   241.96 Mb/s Out -  20386.8 p/s In   21295.5 p/s Out
+  enp2s0:   241.01 Mb/s In   241.01 Mb/s Out -  19932.1 p/s In   19932.8 p/s Out
+  enp3s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp4s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp5s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp6s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -     10.7 p/s In       0.1 p/s Out
+total:      474.75 Mb/s In   475.24 Mb/s Out -  39678.9 p/s In   40564.8 p/s Out
+  enp1s0:   237.62 Mb/s In   238.06 Mb/s Out -  20059.4 p/s In   20949.5 p/s Out
+  enp2s0:   237.13 Mb/s In   237.18 Mb/s Out -  19611.0 p/s In   19615.3 p/s Out
+  enp3s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp4s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp5s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  enp6s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
+  wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -      8.5 p/s In       0.0 p/s Out
+
+DPDK switch 
