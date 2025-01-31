@@ -51,3 +51,4 @@ DPDK switch
 23 in/out x2 (in/out) x8 (bytes to bits) = 368 Mbps
 (softswitch: 29 x2 x8 = 464 Mbps) 
 CPU = 2x cores, 2.4GHz 
+ping latency = min/avg/max/mdev = 0.249/0.358/0.447/0.046 ms 
