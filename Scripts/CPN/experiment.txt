@@ -67,5 +67,10 @@ ping -s 65000 -i 0.000001
 (softswitch: 29 x2 x8 = 464 Mbps) 
 CPU = 2x cores, 2.4GHz 
 def ping latency = min/avg/max/mdev = 0.249/0.358/0.447/0.046 ms 
+
 iperf -c 10.0.0.2 -t 60
 908 Mbits/sec
+
+iperf -c 10.0.0.2 -U -t 60 -b 1G 
+956 Mbits/sec 
+(DPDK report packet drop = 0) 
