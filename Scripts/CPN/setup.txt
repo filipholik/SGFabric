@@ -43,3 +43,6 @@ flask run
 //--- Close DPDK
 dpdk-devbind.py --unbind 0000:01:00.0
 dpdk-devbind.py --unbind 0000:02:00.0
+
+//--- Experiment
+ethstats -n 2
