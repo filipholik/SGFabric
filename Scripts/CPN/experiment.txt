@@ -4,6 +4,12 @@ def ping latency = min/avg/max/mdev = 0.290/0.362/0.426/0.025 ms
 iperf -c 10.0.0.2 -t 60
 908 Mbits/sec
 
+iperf -c 10.0.0.1 -U -t 60 -b 2G / 1G
+720 Mbits/sec - 724 Mbits/sec 
+
+iperf -c 10.0.0.2 -U -t 60 -b 1G (2G no effect) 
+956 Mbits/sec
+
 sudo ping -s 65000 -i 0.00001 10.0.0.2
 29 MiB ps in plus out = 70x8 = 464 Mbps 
 
