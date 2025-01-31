@@ -6,6 +6,7 @@ iperf -c 10.0.0.2 -t 60
 
 iperf -c 10.0.0.1 -U -t 60 -b 2G / 1G
 720 Mbits/sec - 724 Mbits/sec 
+1G: 715 - 842 Mbits/sec (depends on the Pi4 load - struggling) 
 
 iperf -c 10.0.0.2 -U -t 60 -b 1G (2G no effect) 
 956 Mbits/sec
