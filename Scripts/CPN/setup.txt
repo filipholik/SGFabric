@@ -1,0 +1,45 @@
+https://github.com/UofG-netlab/BPFabric/wiki/Running%20BPFabric
+
+//--- Softswitch
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0
+
+// --- Controller
+ ~/BPFabric/controller/cli.py
+
+//--- DPDK
+sudo -i
+echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+cat /proc/meminfo
+
+dpdk-devbind.py --status
+
+Network devices using kernel driver
+===================================
+0000:01:00.0 'Ethernet Controller I225-V 15f3' if=enp1s0 drv=igc unused= 
+0000:02:00.0 'Ethernet Controller I225-V 15f3' if=enp2s0 drv=igc unused= 
+0000:03:00.0 'Ethernet Controller I225-V 15f3' if=enp3s0 drv=igc unused= 
+0000:04:00.0 'Ethernet Controller I225-V 15f3' if=enp4s0 drv=igc unused= 
+0000:05:00.0 'Ethernet Controller I225-V 15f3' if=enp5s0 drv=igc unused= 
+0000:06:00.0 'Ethernet Controller I225-V 15f3' if=enp6s0 drv=igc unused= 
+
+modprobe vfio-pci
+dpdk-devbind.py --bind=vfio-pci 0000:01:00.0
+dpdk-devbind.py --bind=vfio-pci 0000:02:00.0
+
+cd /home/cpn/BPFabric/dpdkswitch/build/
+sudo ./bpfabric -l 0-1 -n 4 -- -q 1 -p 3 -d 1 -c 127.0.0.1:9000
+
+//--- CLI
+1 add 0 learningswitch ../examples/learningswitch.o
+
+//--- Dashboard
+cd ~/BPFabric/controller/
+./service_broker.py
+
+cd ~/Dashboard/
+source env/bin/activate
+flask run
+
+//--- Close DPDK
+dpdk-devbind.py --unbind 0000:01:00.0
+dpdk-devbind.py --unbind 0000:02:00.0
