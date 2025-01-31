@@ -48,5 +48,6 @@ total:      987.41 Mb/s In   987.49 Mb/s Out -  96978.0 p/s In   96982.0 p/s Out
   wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -      6.0 p/s In       0.0 p/s Out
 
 DPDK switch 
-23 in/out x2 (in/out) x8 (bytes to bits) = 368 Mbps vs 966 Mbps for softswitch 
+23 in/out x2 (in/out) x8 (bytes to bits) = 368 Mbps
+(softswitch: 29 x2 x8 = 464 Mbps) 
 CPU = 2x cores, 2.4GHz 
