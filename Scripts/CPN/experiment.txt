@@ -74,3 +74,6 @@ iperf -c 10.0.0.2 -t 60
 iperf -c 10.0.0.2 -U -t 60 -b 1G 
 956 Mbits/sec 
 (DPDK report packet drop = 0) 
+
+Open vSwitch
+def ping latency = min/avg/max/mdev = 0.242/0.282/0.339/0.021 ms 
