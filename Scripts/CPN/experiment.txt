@@ -84,6 +84,5 @@ iperf -c 10.0.0.2 -t 60
 iperf -c 10.0.0.2 -U -t 60 -b 1G 
 957 Mbits/sec - 957 Mbits/sec
 
-
-
-
+--- S1 - S2 SoftSwitch ---
+956 Mbits/sec - 956 Mbits/sec
