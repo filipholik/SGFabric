@@ -46,3 +46,27 @@ dpdk-devbind.py --unbind 0000:02:00.0
 
 //--- Experiment
 ethstats -n 2
+
+//--- Open vSwitch
+sudo ovs-vsctl show
+ip link show
+
+sudo ovs-vsctl del-br br0
+sudo ovs-vsctl add-br br0
+sudo ovs-vsctl add-port br0 enp1s0
+sudo ovs-vsctl add-port br0 enp2s0
+sudo ip link set dev enp1s0 up
+sudo ip link set dev enp2s0 up
+
+//--- 2 switches
+S1: 
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0 enp5s0
+
+S2: 
+sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.2:9000" --promiscuous enp1s0 enp2s0 enp5s0
+
+
+
+
+
+
