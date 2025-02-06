@@ -1,4 +1,4 @@
-Softswitch 
+--- Softswitch ---
 sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0 
 def ping latency = min/avg/max/mdev = 0.290/0.362/0.426/0.025 ms 
 iperf -c 10.0.0.2 -t 60
@@ -60,7 +60,7 @@ total:      987.41 Mb/s In   987.49 Mb/s Out -  96978.0 p/s In   96982.0 p/s Out
   enp6s0:     0.00 Mb/s In     0.00 Mb/s Out -      0.0 p/s In       0.0 p/s Out
   wlp7s0f0:     0.00 Mb/s In     0.00 Mb/s Out -      6.0 p/s In       0.0 p/s Out
 
-DPDK switch 
+--- DPDK switch ---
 ping -s 65000 -i 0.000001
 35 MiB ps in plus out = 70x8 = 560 Mbps  
 
@@ -75,5 +75,15 @@ iperf -c 10.0.0.2 -U -t 60 -b 1G
 956 Mbits/sec 
 (DPDK report packet drop = 0) 
 
-Open vSwitch
+--- Open vSwitch ---
 def ping latency = min/avg/max/mdev = 0.242/0.282/0.339/0.021 ms 
+
+iperf -c 10.0.0.2 -t 60
+935 Mbits/sec - 936 Mbits/sec 
+
+iperf -c 10.0.0.2 -U -t 60 -b 1G 
+957 Mbits/sec - 957 Mbits/sec
+
+
+
+
