@@ -63,9 +63,10 @@ S1:
 sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0 enp5s0
 
 S2: 
-sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.2:9000" --promiscuous enp1s0 enp2s0 enp5s0
+sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.1:9000" --promiscuous enp1s0 enp2s0 enp5s0
 
-
+1 add 0 learningswitch ../examples/learningswitch.o
+2 add 0 learningswitch ../examples/learningswitch.o
 
 
 
