@@ -87,9 +87,13 @@ sudo bpftool prog list
 
 //Detach
 sudo rm /sys/fs/bpf/xdp_wire
-sudo bpftool net detach xdp dev lo
+sudo bpftool net detach xdp dev enp1s0
+sudo bpftool net detach xdp dev enp2s0
 
 //Important - interfaces: ip link show
+
+//Debug - tracing 
+sudo cat /sys/kernel/tracing/trace_pipe
 
 //More: https://thegraynode.io/posts/bpf_bpftool/
 
