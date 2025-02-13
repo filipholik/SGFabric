@@ -68,6 +68,32 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.1:9000" -
 1 add 0 learningswitch ../examples/learningswitch.o
 2 add 0 learningswitch ../examples/learningswitch.o
 
+//--- XDP 
+//Compile
+clang -O2 -target bpf -c xdp_wire.c -o xdp_wire.o
+
+//Load
+sudo bpftool prog load xdp_wire.o /sys/fs/bpf/xdp_wire
+
+//Attach
+sudo bpftool net attach xdp name xdp_prog_wire dev lo 
+
+sudo bpftool net attach xdp name xdp_prog_wire dev enp1s0 
+sudo bpftool net attach xdp name xdp_prog_wire dev enp2s0 
+
+//Verify
+sudo bpftool net list
+sudo bpftool prog list
+
+//Detach
+sudo rm /sys/fs/bpf/xdp_wire
+sudo bpftool net detach xdp dev lo
+
+//Important - interfaces: ip link show
+
+//More: https://thegraynode.io/posts/bpf_bpftool/
+
+
 
 
 
