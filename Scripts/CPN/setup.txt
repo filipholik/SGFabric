@@ -97,7 +97,12 @@ sudo cat /sys/kernel/tracing/trace_pipe
 
 //More: https://thegraynode.io/posts/bpf_bpftool/
 
+//TAP virtual interface for PLC GRAPPA
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --tap="grappa" -d 1 -v -p enp1s0 enp2s0
 
+./cli.py
+1 add 0 grappa_tap ../functions/grappa_tap.o
+1 add 1 forwarding ../functions/forwarding.o
 
 
 
