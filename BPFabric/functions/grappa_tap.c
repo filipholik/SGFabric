@@ -3,11 +3,16 @@
 
 uint64_t prog(struct packet *pkt, unsigned len)
 {
-    if (pkt->metadata.in_port == 1) //enp1s0
+    //Just in case any data from the virtual port
+    if (pkt->metadata.in_port == 0)
     {
-        //Check the BPFabric interfaces mapping (index on start)  
-        bpf_mirror(0, pkt, len); // def: 2, 100         
+        return DROP;
     }
+    //if (pkt->metadata.in_port == 1) //enp1s0
+    //{
+        //Check the BPFabric interfaces mapping (index on start)  
+    bpf_mirror(0, pkt, len); // Mirror from all the ports        
+    //}
   
     return NEXT;
 }
