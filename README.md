@@ -41,8 +41,6 @@ sudo apt install python3-flask
 ![SGFabric topology](https://github.com/filipholik/SGFabric/blob/main/SGFabric.png)
 
 # Usage
-
-
 Printing maps tables:  
 8 table 0 list   
 8 table 0 assetdisc list  
