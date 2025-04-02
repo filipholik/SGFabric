@@ -68,6 +68,24 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.1:9000" -
 1 add 0 learningswitch ../examples/learningswitch.o
 2 add 0 learningswitch ../examples/learningswitch.o
 
+//--- GOOSE Encryption Experiment
+sudo ip link add veth1 type veth peer name veth2
+sudo ip link add veth3 type veth peer name veth4
+
+sudo ip link set dev veth1 up
+sudo ip link set dev veth2 up
+sudo ip link set dev veth3 up
+sudo ip link set dev veth4 up
+
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous veth1 veth2 enp1s0 enp2s0 
+
+~/BPFabric/controller/cli.py 
+
+// CLI
+1 add 0 goose_encryption ../functions/goose_encryption.o
+1 add 1 forwarding ../functions/forwarding.o
+
+
 //--- XDP 
 //Compile
 clang -O2 -target bpf -c xdp_wire.c -o xdp_wire.o
