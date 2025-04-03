@@ -82,9 +82,15 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --p
 ~/BPFabric/controller/cli.py 
 
 // CLI
+1 add 0 goose_forwarder ../functions/goose_forwarder.o
 1 add 0 goose_encryption ../functions/goose_encryption.o
 1 add 1 forwarding ../functions/forwarding.o
 
+// GEDSF
+Required: 
+sudo apt install cmake
+https://doc.libsodium.org/installation
+sudo ln -s /usr/local/lib/libsodium.so.23.3.0 /usr/lib/libsodium.so.23
 
 //--- XDP 
 //Compile
