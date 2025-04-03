@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <sqlite3.h>
 #include <signal.h>
 
 #include "mms_value.h"
@@ -16,61 +15,6 @@
 
 #include "hal_time.h"
 
-
-char dbPath[128] = "../../../GUI/PHPserver/dbHandler/SGData.db";
-int id;
-
-void sigint_handler(int signalId)
-{
-    sqlite3 *db;
-    sqlite3_stmt *res;
-    char *err_msg = 0;
-
-    int rc = sqlite3_open(dbPath, &db);
-    if (rc != SQLITE_OK) {
-        
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        
-        return;
-    }
-
-    char sql[128]; 
-    sprintf(sql,"UPDATE GOOSE SET state=0 WHERE id=%d",id);
-
-    rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
-    sqlite3_close(db);
-    exit(0);
-}
-
-void updateGooseDb(char* interface){
-    sqlite3 *db;
-    sqlite3_stmt *res;
-    char *err_msg = 0;
-
-    if(strcmp(interface,"IED1-eth0")==0){
-	id = 1;
-    }
-    else{
-	id = 4;
-    }
-
-    int rc = sqlite3_open(dbPath, &db);
-    if (rc != SQLITE_OK) {
-        
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        
-        return;
-    }
-
-    char sql[128]; 
-    sprintf(sql,"UPDATE GOOSE SET state=1 WHERE id=%d",id);
-
-    rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
-    sqlite3_close(db);
-    
-}
 
 //Generates random number from the defined interval
 double generateRandomNumber(double minValue, double maxValue)
@@ -276,9 +220,6 @@ int main(int argc, char** argv)
        interface = "eth0";
 
     printf("Using interface %s\n", interface);
-
-    signal(SIGINT, sigint_handler);
-    //updateGooseDb(interface);
 
 	cont_exp(interface); 
 
