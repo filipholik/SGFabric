@@ -6,12 +6,30 @@ Function which sends GOOSE messages from physical ports to the encryption / decr
 Combines simple forwarding. 
 */
 
+#include <linux/if_ether.h>
+#include "ebpf_switch.h"
+
+struct bpf_map_def SEC("maps") inports = {
+    .type = BPF_MAP_TYPE_HASH,
+    .key_size = 6, // MAC address is the key
+    .value_size = sizeof(uint32_t),
+    .max_entries = 256,
+};
+
 uint64_t prog(struct packet *pkt)
 {
-    //First virtual port is only for traffic uNF -> GEDSF 
-    if (pkt->metadata.in_port == 0)
+    uint32_t *out_port;
+
+    //No traffic from virtual port 1 
+    if (pkt->metadata.in_port == 0 )
     {
         return DROP;
+    }
+
+    //Encrypted GOOSE
+    if (pkt->metadata.in_port == 1  )
+    {
+        return PORT + 3;
     }
 
     //Traffic from physical ports and only GOOSE traffic 
@@ -23,12 +41,26 @@ uint64_t prog(struct packet *pkt)
         //return DROP; 
     }
 
-    // Traffic from GEDSF -> uNF
-    if (pkt->metadata.in_port == 1)
+    // if the source is not a broadcast or multicast
+    if ((pkt->eth.h_source[0] & 1) == 0)
     {
-        return PORT + 3; //Forward to physical port 2
+        // Update the port associated with the packet
+        bpf_map_update_elem(&inports, pkt->eth.h_source, &pkt->metadata.in_port, 0);
     }
 
-    return DROP;
+    // Flood if the destination is broadcast or multicast
+    if (pkt->eth.h_dest[0] & 1)
+    {
+        return FLOOD;
+    }
+
+    // Lookup the output port
+    if (bpf_map_lookup_elem(&inports, pkt->eth.h_dest, &out_port) == -1)
+    {
+        // If no entry was found flood
+        return FLOOD;
+    }
+
+    return *out_port;
 }
 char _license[] SEC("license") = "GPL";
