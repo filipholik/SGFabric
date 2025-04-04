@@ -1,8 +1,10 @@
 Host 1: bpfabric@pi5
 10.0.0.1 255.0.0.0 
+ptpd server
 
 Host 2: netlab@pi4
 10.0.0.2 255.0.0.0
+ptpd client
 
 CPN1
 10.0.0.254 255.0.0.0
