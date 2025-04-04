@@ -77,7 +77,8 @@ sudo ip link set dev veth2 up
 sudo ip link set dev veth3 up
 sudo ip link set dev veth4 up
 
-sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous veth1 veth2 enp1s0 enp2s0 
+sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous veth1 veth3 enp1s0 enp2s0 enp3s0 
+sudo ~/NetworkControllerDashboard-ps/backend-ps/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous veth1 veth3 enp1s0 enp2s0 enp3s0 
 
 ~/BPFabric/controller/cli.py 
 
