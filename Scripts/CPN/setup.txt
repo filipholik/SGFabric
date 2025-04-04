@@ -81,6 +81,9 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --p
 sudo ~/NetworkControllerDashboard-ps/backend-ps/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous veth1 veth3 enp1s0 enp2s0 enp3s0 
 
 ~/BPFabric/controller/cli.py 
+cd ~/NetworkControllerDashboard-ps/backend-ps/controller/
+./cli.py
+
 
 // CLI
 1 add 0 goose_forwarder ../functions/goose_forwarder.o
