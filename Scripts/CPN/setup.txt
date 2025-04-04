@@ -132,5 +132,9 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --t
 1 add 0 grappa_tap ../functions/grappa_tap.o
 1 add 1 forwarding ../functions/forwarding.o
 
+//--- RP commands
+scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
+scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
+
 
 
