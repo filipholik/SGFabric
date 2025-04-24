@@ -84,9 +84,10 @@ sudo ~/NetworkControllerDashboard-ps/backend-ps/softswitch/softswitch --dpid=1 -
 cd ~/NetworkControllerDashboard-ps/backend-ps/controller/
 ./cli.py
 
-
 // CLI
 1 add 0 goose_forwarder ../functions/goose_forwarder.o
+
+// OR 
 1 add 0 goose_encryption ../functions/goose_encryption.o
 1 add 1 forwarding ../functions/forwarding.o
 
@@ -133,8 +134,14 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --t
 1 add 1 forwarding ../functions/forwarding.o
 
 //--- RP commands
+//Login
+ssh bpfabric@10.0.0.1
+ssh netlab@10.0.0.2
+
+//GOOSE
+cd Documents/comlib_dps/sgdevices/IED_GOOSE/
+./ied_goose
+
+//Copy
 scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
 scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
-
-
-
