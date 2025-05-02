@@ -142,6 +142,12 @@ ssh netlab@10.0.0.2
 cd Documents/comlib_dps/sgdevices/IED_GOOSE/
 ./ied_goose
 
+//PTPD config
+sudo ptpd -M -i eth0
+sudo ptpd -s -i eth0
+sudo date --set="May 02 10:10:00 2025"
+date
+
 //Copy
 scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
 scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
