@@ -151,6 +151,10 @@ date
 //Link limit
 sudo ethtool -s enp2s0 speed 100 duplex full
 
+//iPerf settings 
+iperf -c 10.0.0.1 -u -b 25M -l 124 -t 120
+iperf -s -u
+
 //Copy
 scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
 scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
