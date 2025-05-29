@@ -11,7 +11,9 @@ Host 3: otsentry@otsentry
 
 CPN1
 10.0.0.254 255.0.0.0
-x
+
+N100 nodes
+otsentry@otsentry
 
 DPDK error - ldconfig
 
