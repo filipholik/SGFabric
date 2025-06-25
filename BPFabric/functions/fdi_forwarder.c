@@ -8,9 +8,6 @@ Function which sends MODBUS traffic from physical ports to the non-eBPF stack vi
 Requires forwarding at the next stage. 
 */
 
-#include <linux/if_ether.h>
-#include "ebpf_switch.h"
-
 struct bpf_map_def SEC("maps") inports = {
     .type = BPF_MAP_TYPE_HASH,
     .key_size = 6, // MAC address is the key
@@ -49,7 +46,7 @@ uint64_t prog(struct packet *pkt)
         if (ipv4->ip_p == 6)
         {
             struct tcphdr *tcp = (struct tcphdr *)(((uint32_t *)ipv4) + ipv4->ip_hl);
-            if(tcp->source == 62977 || tcp->dest == 62977) //corresponds to 502
+            if(tcp->source == 62977 || tcp->dest == 62977) //corresponds to 502 Little Endian
             {
                 return PORT + 0;
             }else
