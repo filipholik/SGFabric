@@ -4,8 +4,8 @@
 #include "ebpf_switch.h"
 
 /*
-Function which sends GOOSE messages from physical ports to the encryption / decryption stack via a virtual port. 
-Combines simple forwarding. 
+Function which sends MODBUS traffic from physical ports to the non-eBPF stack via a virtual port. 
+Requires forwarding at the next stage. 
 */
 
 #include <linux/if_ether.h>
