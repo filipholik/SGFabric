@@ -59,11 +59,14 @@ sudo ip link set dev enp2s0 up
 sudo ip link set dev enp3s0 up
 
 sudo ovs-vsctl set-controller br0 tcp:192.168.10.1:6633
+(the switch is configured with 192.168.10.2) 
 
 //--- RYU SDN Controller
 pyenv activate ryu
 cd /home/otsentry/ryu/ryu/app/
 ryu-manager fdi_switch.py
+
+More details about installation: https://heltale.com/sdn/setting_up_ryu/ 
 
 //--- 2 switches
 S1: 
