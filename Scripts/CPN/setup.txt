@@ -58,7 +58,7 @@ sudo ovs-vsctl add-port br0 enp3s0
 sudo ip link set dev enp2s0 up
 sudo ip link set dev enp3s0 up
 
-sudo ovs-vsctl set-controller br0 tcp:10.10.10.10:6653
+sudo ovs-vsctl set-controller br0 tcp:192.168.10.1:6633
 
 //--- RYU SDN Controller
 pyenv activate ryu
