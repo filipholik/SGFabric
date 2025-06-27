@@ -380,6 +380,10 @@ def threaded_mon_timer():
     while True:
         storage.connections[6].send(TableListRequest(index=0, table_name="monitor"))
         storage.connections[7].send(TableListRequest(index=0, table_name="goose_analyser"))
+        storage.connections[7].send(TableListRequest(index=1, table_name="assetdisc"))
+        storage.connections[8].send(TableListRequest(index=1, table_name="assetdisc"))
+        storage.connections[9].send(TableListRequest(index=0, table_name="assetdisc"))
+        storage.connections[2].send(TableListRequest(index=0, table_name="assetdisc"))
         #connection.send(TableListRequest(index=0, table_name="assetdisc"))
         print("Sending monitoring request")
         time.sleep(1)
@@ -419,7 +423,7 @@ def install():
         with open('../functions/block.o', 'rb') as f:
             print("Installing ACL service...")
             elf = f.read() 
-            storage.connections[6].send(FunctionAddRequest(name="acl", index=1, elf=elf))
+            #storage.connections[6].send(FunctionAddRequest(name="acl", index=1, elf=elf))
             #storage.connections[2].send(FunctionAddRequest(name="acl", index=0, elf=elf))                  
             time.sleep(1)
             print("ACL service installed...")                
@@ -430,7 +434,7 @@ def install():
             storage.connections[7].send(FunctionAddRequest(name="assetdisc", index=1, elf=elf))   
             storage.connections[8].send(FunctionAddRequest(name="assetdisc", index=1, elf=elf)) #0
             storage.connections[9].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))
-            #storage.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
+            storage.connections[2].send(FunctionAddRequest(name="assetdisc", index=0, elf=elf))             
             time.sleep(1)
             print("ACL service installed...")   
 
