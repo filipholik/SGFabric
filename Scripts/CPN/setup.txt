@@ -62,6 +62,7 @@ sudo ovs-vsctl set-controller br0 tcp:192.168.10.1:6633
 
 //--- RYU SDN Controller
 pyenv activate ryu
+cd /home/otsentry/ryu/ryu/app/
 ryu-manager app.py
 
 //--- 2 switches
