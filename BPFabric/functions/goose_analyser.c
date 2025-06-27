@@ -50,15 +50,44 @@ uint64_t prog(struct packet *pkt)
                 return DROP; 
             }
             
-            if(tag == 0x85) {  //stNum             
-                if(length == 1) {
-                    item->stNum = *((__u8 *)ptr); 
-                }                
-            }
-            if(tag == 0x86) {  //sqNum             
-                if(length == 1) {
-                    item->sqNum = *((__u8 *)ptr); 
+            if(tag == 0x85) {  //stNum    
+                __u32 value = 0; 
+                if(length > 0 && length <= 4) {
+                    __u8 *p = (__u8 *)ptr; 
+                    for (int i = 0; i < 4; i++) {
+                        if(i < length){
+                            value = (value << 8) | p[i]; 
+                        }                        
+                    }
+                    item->stNum = value; 
                 }
+                /*if(length == 1) {
+                    item->stNum = *((__u8 *)ptr); 
+                }  */            
+            }
+            if(tag == 0x86) {  //sqNum       
+                __u32 value = 0; 
+                if(length > 0 && length <= 4) {
+                    __u8 *p = (__u8 *)ptr; 
+                    for (int i = 0; i < 4; i++) {
+                        if(i < length){
+                            value = (value << 8) | p[i]; 
+                        }                        
+                    }
+                    item->sqNum = value; 
+                }
+                //Not good enough for the verifier: 
+                /*__u32 value = 0; 
+                if(length > 0 && length <= 4) {
+                    for (int i = 0; i < length; i++) {
+                        value = (value << 8) | ((__u8 *)ptr[i]); 
+                    }
+                    item->sqNum = value; 
+                }    */
+
+                /*if(length == 1) {
+                    item->sqNum = *((__u8 *)ptr); 
+                }*/
                 break; 
             }
             ptr += length; 
