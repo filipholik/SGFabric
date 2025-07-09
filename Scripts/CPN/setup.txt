@@ -65,6 +65,7 @@ sudo ovs-vsctl set-controller br0 tcp:192.168.10.1:6633
 pyenv activate ryu
 cd /home/otsentry/ryu/ryu/app/
 ryu-manager fdi_switch.py
+(default L2 switch): ryu-manager simple_switch_13.py
 
 More details about installation: https://heltale.com/sdn/setting_up_ryu/ 
 
