@@ -37,24 +37,27 @@ class SimpleSwitch13(app_manager.RyuApp):
         # FDI forwarding
 
         # Modbus traffic goes to the controller
+        datapath = ev.msg.datapath
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
 
         # Client -> server FDI 
-        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_dst=MODBUS_PORT)
+        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_dst=self.MODBUS_PORT)
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER)] #3
         self.add_flow(datapath, 5, match, actions)
 
         # Server -> client FDI 
-        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_src=MODBUS_PORT)
+        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_src=self.MODBUS_PORT)
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER)] #2
         self.add_flow(datapath, 5, match, actions)
 
         # Other traffic rules
-        match = parser.OFPMatch(in_port=2)
-        actions = [parser.OFPActionOutput(3)]
+        match = parser.OFPMatch(in_port=1)
+        actions = [parser.OFPActionOutput(2)]
         self.add_flow(datapath, 1, match, actions)
         
-        match = parser.OFPMatch(in_port=3)
-        actions = [parser.OFPActionOutput(2)]
+        match = parser.OFPMatch(in_port=2)
+        actions = [parser.OFPActionOutput(1)]
         self.add_flow(datapath, 1, match, actions)
 
         self.logger.info("OF rules proactively inserted")
@@ -93,6 +96,13 @@ class SimpleSwitch13(app_manager.RyuApp):
                                     match=match, instructions=inst)
         datapath.send_msg(mod)
 
+    # Function for FDI logic 
+    def fdi(pkt, in_port): 
+        # TODO 
+
+        # Return if the packet is allowed 
+        return 1 #or 0 
+
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         # If you hit this you might want to increase
@@ -126,10 +136,23 @@ class SimpleSwitch13(app_manager.RyuApp):
             tcp_pkt = pkt.get_protocol(tcp.tcp)
             if tcp_pkt:
                 #
-                if tcp_pkt.dst_port == MODBUS_PORT or tcp_pkt.src_port == MODBUS_PORT: 
+                if tcp_pkt.dst_port == self.MODBUS_PORT or tcp_pkt.src_port == self.MODBUS_PORT: 
                     # Send to FDI
                     self.logger.info("Forwarding MODBUS packet from %s to FDI", in_port)
-                    #TODO: fdi(pkt, in_port)
+                    
+                    packet_allowed = fdi(pkt, in_port) #TODO:
+
+                    if packet_allowed == 1: 
+                        # Send the packet out 
+                        actions = [parser.OFPActionOutput(0)]
+                        if in_port == 1: 
+                            actions = [parser.OFPActionOutput(2)]
+                        if in_port == 2: 
+                            actions = [parser.OFPActionOutput(1)]
+                        out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
+                                  in_port=in_port, actions=actions, data=data)
+                        datapath.send_msg(out)
+
                     return 
 
         # Should not happen         
