@@ -24,15 +24,17 @@ from ryu.lib.packet import ether_types
 from ryu.lib.packet import ipv4
 from ryu.lib.packet import tcp
 
+
+
 class SimpleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
-    MODBUS_PORT = 502 
+    MODBUS_PORT = 1507 
 
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
 
-    def insert_proactive_of_rules(self): 
+    def insert_proactive_of_rules(self, ev): 
         # Function will proactively insert OpenFlow rules for the 
         # FDI forwarding
 
@@ -79,7 +81,7 @@ class SimpleSwitch13(app_manager.RyuApp):
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
         self.add_flow(datapath, 0, match, actions)
-        self.insert_proactive_of_rules()
+        self.insert_proactive_of_rules(ev)
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
@@ -97,9 +99,9 @@ class SimpleSwitch13(app_manager.RyuApp):
         datapath.send_msg(mod)
 
     # Function for FDI logic 
-    def fdi(pkt, in_port): 
+    def fdi(self, pkt, in_port): 
         # TODO 
-
+	self.logger.info("TAHIRA")
         # Return if the packet is allowed 
         return 1 #or 0 
 
@@ -140,7 +142,7 @@ class SimpleSwitch13(app_manager.RyuApp):
                     # Send to FDI
                     self.logger.info("Forwarding MODBUS packet from %s to FDI", in_port)
                     
-                    packet_allowed = fdi(pkt, in_port) #TODO:
+                    packet_allowed = self.fdi(pkt, in_port) 
 
                     if packet_allowed == 1: 
                         # Send the packet out 
@@ -149,14 +151,16 @@ class SimpleSwitch13(app_manager.RyuApp):
                             actions = [parser.OFPActionOutput(2)]
                         if in_port == 2: 
                             actions = [parser.OFPActionOutput(1)]
-                        out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
+			
+			            data = msg.data                        
+			            out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
                                   in_port=in_port, actions=actions, data=data)
                         datapath.send_msg(out)
 
                     return 
 
         # Should not happen         
-        self.logger.info("Simple switch loggic triggered, possible bug")
+        self.logger.info("Simple switch loggic triggered, possible bug (check TCP port settings)")
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
