@@ -151,7 +151,7 @@ class SimpleSwitch13(app_manager.RyuApp):
                     # Send to FDI
                     self.logger.info("Forwarding MODBUS packet from %s to FDI", in_port)
                     
-                    self.fdi(datapath, pkt, in_port) 
+                    self.fdi(datapath, ev.msg.data, in_port) 
 
                     return  
 
