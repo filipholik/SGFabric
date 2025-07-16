@@ -46,14 +46,14 @@ class SimpleSwitch13(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         # Client -> server FDI 
-        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_dst=self.MODBUS_PORT)
+        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_dst=self.MODBUS_PORT, tcp_flags=0x018)
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER)] #3
         self.add_flow(datapath, 5, match, actions)
 
         # Server -> client FDI 
-        match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_src=self.MODBUS_PORT)
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER)] #2
-        self.add_flow(datapath, 5, match, actions)
+        #match = parser.OFPMatch(eth_type=0x0800, ip_proto=6, tcp_src=self.MODBUS_PORT, tcp_flags=0x018)
+        #actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER)] #2
+        #self.add_flow(datapath, 5, match, actions)
 
         # Other traffic rules
         match = parser.OFPMatch(in_port=1)
@@ -109,7 +109,7 @@ class SimpleSwitch13(app_manager.RyuApp):
             out_port = 1
 
         fdi_singleton = FDISingleton()
-        fdi_singleton.modbus_packet_capture(datapath, pkt, out_port) 
+        fdi_singleton.modbus_packet_capture(datapath, pkt, out_port, self.logger)
 
         # Return if the packet is allowed 
         #return 1 #or 0 
