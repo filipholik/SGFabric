@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+message Header {
+    enum Type {
+        HELLO = 0;
+
+        FUNCTION_ADD_REQUEST = 1;
+        FUNCTION_ADD_REPLY = 2;
+        FUNCTION_REMOVE_REQUEST = 3;
+        FUNCTION_REMOVE_REPLY = 4;
+        FUNCTION_LIST_REQUEST = 5;
+        FUNCTION_LIST_REPLY = 6;
+
+        TABLES_LIST_REQUEST = 7;
+        TABLES_LIST_REPLY = 8;
+        TABLE_LIST_REQUEST = 9;
+        TABLE_LIST_REPLY = 10;
+
+        TABLE_ENTRY_GET_REQUEST = 11;
+        TABLE_ENTRY_GET_REPLY = 12;
+        TABLE_ENTRY_INSERT_REQUEST = 13;
+        TABLE_ENTRY_INSERT_REPLY = 14;
+        TABLE_ENTRY_DELETE_REQUEST = 15;
+        TABLE_ENTRY_DELETE_REPLY = 16;
+
+        PACKET_IN = 17;
+        PACKET_OUT = 18;
+
+        NOTIFY = 19;
+    }
+}

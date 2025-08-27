@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message PacketIn {
+    bytes data = 1;
+}
+
+message PacketOut {
+    bytes data = 1;
+    uint64 out_port = 2;
+}

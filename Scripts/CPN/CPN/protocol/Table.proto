@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+message TableDefinition {
+    enum TableType {
+        UNSPEC = 0;
+        HASH = 1;
+        ARRAY = 2;
+        LPM_TRIE = 11;
+    }
+
+    string table_name = 1;
+    TableType table_type = 2;
+    uint32 key_size = 3;
+    uint32 value_size = 4;
+    uint32 max_entries = 5;
+}
+
+enum TableStatus {
+    SUCCESS = 0;
+    STAGE_NOT_FOUND = 1;
+    TABLE_NOT_FOUND = 2;
+    ENTRY_NOT_FOUND = 3;
+}
+
+message TablesListRequest {
+    uint32 index = 1;
+}
+
+message TablesListReply {
+    TableStatus status = 1;
+    repeated TableDefinition entries = 2;
+}
+
+message TableListRequest {
+    uint32 index = 1;
+    string table_name = 2;
+}
+
+message TableListReply {
+    TableStatus status = 1;
+    TableDefinition entry = 2;
+    uint32 n_items = 3;
+    bytes items = 4;
+}
+
+message TableEntryGetRequest {
+    uint32 index = 1;
+    string table_name = 2;
+    bytes key = 3;
+}
+
+message TableEntryGetReply {
+    TableStatus status = 1;
+    bytes key = 2;
+    bytes value = 3;
+}
+
+message TableEntryInsertRequest {
+    uint32 index = 1;
+    string table_name = 2;
+    bytes key = 3;
+    bytes value = 4;
+}
+
+message TableEntryInsertReply {
+    TableStatus status = 1;
+}
+
+message TableEntryDeleteRequest {
+    uint32 index = 1;
+    string table_name = 2;
+    bytes key = 3;
+}
+
+message TableEntryDeleteReply {
+    TableStatus status = 1;
+}
