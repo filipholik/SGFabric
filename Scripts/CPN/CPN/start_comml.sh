@@ -4,8 +4,8 @@
 
 # COMML Configuration
 DPID=1
-IOL_IP='127.0.0.1'
-IOL_PORT='9000'
+IOL_SOUTHBOUND_IP='127.0.0.1'
+IOL_SOUTHBOUND_PORT='9000'
 INTERFACES_LIST='enp0s3 enp0s8' #Check with ifconfig
 SOFTSWITCH=1 #Set to 0 for DPDK 
 

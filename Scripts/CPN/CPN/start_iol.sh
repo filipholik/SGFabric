@@ -3,7 +3,11 @@
 # University of Glasgow, 2025 
 
 # IOL Configuration
+IOL_NORTHBOUND_IP='127.0.0.1'
+IOL_NORTHBOUND_PORT=5000
 
 # Startup of the IOL 
+cd IOL/
+./iol_broker.py $IOL_NORTHBOUND_IP $IOL_NORTHBOUND_PORT 
 
 #bash
