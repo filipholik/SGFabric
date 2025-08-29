@@ -6,8 +6,9 @@
 DPID=1
 IOL_SOUTHBOUND_IP='127.0.0.1'
 IOL_SOUTHBOUND_PORT='9000'
-INTERFACES_LIST='enp0s3 enp0s8' #Check with ifconfig
-SOFTSWITCH=1 #Set to 0 for DPDK 
+#INTERFACES_LIST='enp1s0 enp2s0 enp3s0 enp4s0' # Check with ifconfig
+INTERFACES_LIST='enp0s3 enp0s8' # VM testing version
+SOFTSWITCH=0 #Set to 0 for DPDK 
 
 # Debug 
 #echo $DPID
@@ -22,8 +23,16 @@ if [ $SOFTSWITCH -eq 1 ]; then
 else
     # DPDK COMML 
     echo "Starting up the DPDK COMML"
-fi
+    sudo -i
+    echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+    cat /proc/meminfo
+    modprobe vfio-pci
+    dpdk-devbind.py --bind=vfio-pci 0000:01:00.0 # Adjust according to the previous output
+    dpdk-devbind.py --bind=vfio-pci 0000:02:00.0 # Adjust according to the previous output
 
+    cd COMML/dpdkswitch/build/
+    sudo ./bpfabric -l 0-1 -n 4 -- -q 1 -p 3 -d 1 -c '$IOL_IP:$IOL_PORT'
+fi
 
 
 #bash
