@@ -138,9 +138,6 @@ def get_status():
                        "status" : storage.status, 
                        "log" : storage.log
                        })
-    #return len(storage.connected_devices)
-    #return {"Connected devices: ": len(storage.connected_devices)}
-    #return storage.status 
 
 @app.get("/ad")
 def refresh_asset_discovery():    
