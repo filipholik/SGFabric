@@ -179,7 +179,7 @@ def refresh_asset_discovery():
 def install_function():    
     try: 
         data = request.get_json()  # Parse raw JSON body
-        print(f"Received request: {data}")
+        print(f"Received install request: {data}")
         #return jsonify({"status": "success", "data" : data}), 200
         dpid = data.get("dpid")
         index = data.get("index")
@@ -205,11 +205,30 @@ def install(dpid, index, function_name):
         else:
             return jsonify({"status": "failed", "description" : "No device with this DPID"}), 500
     return jsonify({"status": "failed", "description" : "Cannot read the file"}), 500
-            
 
-        
+@app.route('/remove', methods=['POST'])
+def remove_function():   
+    try: 
+        data = request.get_json()  # Parse raw JSON body
+        print(f"Received remove request: {data}")
+        #return jsonify({"status": "success", "data" : data}), 200
+        dpid = data.get("dpid")
+        index = data.get("index")
+        print(f"Remove request received, dpid: {dpid}, index: {index}")
+        return remove(dpid, index)       
+    except Exception as e:
+        print(f"Error removing the function {e}")
+        return jsonify({'error': f'Error removing the function {e}'}), 500      
 
-        
+def remove(dpid, index): 
+    if(int(dpid) in storage.connections):                         
+        storage.connections[int(dpid)].send(FunctionRemoveRequest(index=int(index)))              
+        print("Function removed...")                      
+        storage.status["functions"] = (f"Function removed from index {index} and DPID {dpid}")
+        storage.log[str(datetime.datetime.now())] = f"Function removed from index {index} and DPID {dpid}"
+        return jsonify({"status": "success", "description" : "Function was removed successfully"}), 200
+    else:
+        return jsonify({"status": "failed", "description" : "No device with this DPID"}), 500    
 
 if __name__ == '__main__':
     ip = sys.argv[1] 
