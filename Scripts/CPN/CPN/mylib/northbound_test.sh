@@ -17,6 +17,34 @@ spin() {
     printf "\r%s Done!    \n" "$message"
 }
 
+progress_bar() {
+    local duration=$1
+    local interval=0.1
+    local ticks=0
+
+    # Calculate total ticks using bc for float division
+    local total_ticks=$(echo "$duration / $interval" | bc)
+
+    while [ $ticks -le $total_ticks ]; do
+        # Calculate percent using bc
+        percent=$(echo "scale=0; $ticks * 100 / $total_ticks" | bc)
+        filled=$(( percent / 2 ))
+        empty=$(( 50 - filled ))
+
+        bar=$(printf "%${filled}s" | tr ' ' '#')
+        spaces=$(printf "%${empty}s")
+
+        printf "\r[%s%s] %d%%" "$bar" "$spaces" "$percent"
+
+        sleep $interval
+        ticks=$((ticks + 1))
+    done
+    echo
+    #echo -e "\nDone!"
+}
+echo "Preparing to test the CPN IOL Northbound API" 
+progress_bar 5
+
 # echo "Testing the /status API"
 sleep 5 & sleep_pid=$!
 spin $sleep_pid "Testing the /status API"

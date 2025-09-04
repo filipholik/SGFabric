@@ -15,8 +15,13 @@ import time
 import datetime
 from enum import Enum
 
+import asyncio
+
 app = Flask(__name__)
 #global CPNControllerApp
+
+#Async requests 
+pending_requests = {}
 
 class storage():
     connected_devices = set()
@@ -39,7 +44,7 @@ class CPNController(eBPFCoreApplication):
         Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
         #return self
     
-    def get_str_values(value): 
+    def get_str_values(self, value): 
         #print(int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little")) # Bytes 
         #print(int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")) # Packets 
         value_bytes = int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little") 
@@ -55,29 +60,34 @@ class CPNController(eBPFCoreApplication):
     @set_event_handler(Header.TABLE_LIST_REPLY)
     def table_list_reply(self, connection, pkt):        
     
-        entries = []
+        timestamp = str(datetime.datetime.now())        
+        
+        item_size = pkt.entry.key_size + pkt.entry.value_size
+        fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
 
-        if pkt.entry.table_type in [TableDefinition.HASH, TableDefinition.LPM_TRIE]:
-            item_size = pkt.entry.key_size + pkt.entry.value_size
-            fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
+        result = ""
 
-            for i in range(pkt.n_items):
-                key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
-                entries.append((key.hex(), value.hex()))
+        for i in range(pkt.n_items):
+            key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
+            #entries.append((key.hex(), value.hex()))   
+            valStr = self.get_str_values(value)
+            bytesTotal = valStr.split(",",1)[1]
+            if key not in storage.monitoring: 
+                storage.monitoring[key] = 0 
 
-        elif pkt.entry.table_type == TableDefinition.ARRAY:
-            item_size = pkt.entry.value_size
-            fmt = "{}s".format(pkt.entry.value_size)
+            storage.monitoring[key] = str(timestamp) + ":" + str(key.hex()) + ":" + str(bytesTotal) + " bytes \n "
+            result += str(storage.monitoring[key])
+            print(f"\n Read request processed: {storage.monitoring[key]}")
 
-            for i in range(pkt.n_items):
-                value = struct.unpack_from(fmt, pkt.items, i * item_size)[0]
-                entries.append((i, value.hex()))
+        request_id = connection.dpid        
+        future = pending_requests.get(request_id)
+        if future and not future.done():
+            future.set_result(result)
 
-        tabulate(entries, headers=["Key", "Value"])
 
     @set_event_handler(Header.TABLE_ENTRY_GET_REPLY)
     def table_entry_get_reply(self, connection, pkt):
-        tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
+        #tabulate([(pkt.key.hex(), pkt.value.hex())], headers=["Key", "Value"])
         print()
  
     @set_event_handler(Header.NOTIFY)
@@ -91,38 +101,8 @@ class CPNController(eBPFCoreApplication):
 
     @set_event_handler(Header.FUNCTION_LIST_REPLY)
     def function_list_reply(self, connection, pkt):
-        tabulate([ (e.index or 0, e.name, e.counter or 0) for e in pkt.entries ], headers=['index', 'name', 'counter'])
+        #tabulate([ (e.index or 0, e.name, e.counter or 0) for e in pkt.entries ], headers=['index', 'name', 'counter'])
         print()
-
-    def tabulate(rows, headers=None):
-        if not rows or len(rows) == 0:
-            print('<Empty Table>')
-            return
-
-        # Find the largest possible value for each column
-        columns_width = [ max([ len(str(row[i])) for row in rows ]) for i in range(len(rows[0])) ]
-
-        # If there are headers check if headers is larger than content
-        if headers:
-            columns_width = [ max(columns_width[i], len(header)) for i, header in enumerate(headers) ]
-
-        # Add two extra spaces to columns_width for prettiness
-        columns_width = [ w+2 for w in columns_width ]
-
-        # Generate the row format string and delimiter string
-        row_format = '  '.join(['{{:>{}}}'.format(w) for w in columns_width ])
-        row_delim  = [ '='*w for w in columns_width ]
-
-        # Print the headers if necessary
-        print('')
-        if headers:
-            print(row_format.format(*headers))
-
-        # Print the rows
-        print(row_format.format(*row_delim))
-        for row in rows:
-            print(row_format.format(*row))
-        print(row_format.format(*row_delim))
 
     @set_event_handler(Header.FUNCTION_ADD_REPLY)
     def function_add_reply(self, connection, pkt):
@@ -150,15 +130,6 @@ class CPNController(eBPFCoreApplication):
         print("New device connected")
 
 # Northbound REST API
-
-#@app.get("/start")
-#def start():
-    #Thread(target=reactor.run, kwargs={'installSignalHandlers': 0}).start()
-    #storage.CPNControllerApp = CPNController().run()
-    #storage.status["status"] = "Nodes connected"    
-    #return '<h2> Connecting to the nodes... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h2>'
-    #return loading_bar("Connecting to the nodes... ", 50)
-
 
 @app.get("/status")
 def get_status():    
@@ -237,8 +208,28 @@ def read_function():
     dpid = data.get("dpid")
     index = data.get("index")
     name = data.get("name") # monitor
-    # TODO
-    return jsonify({"status": "success", "data" : data}), 200
+    storage.connections[int(dpid)].send(TableListRequest(index=int(index), table_name=name))
+    print("Sending southbound read request...")
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    future = loop.create_future()
+    request_id = int(dpid) 
+    # Save the future so it can be completed by the handler later
+    pending_requests[request_id] = future
+    
+    try:
+        result = loop.run_until_complete(asyncio.wait_for(future, timeout=2))
+        return jsonify(result), 200
+        #return jsonify({f"status": "success", "data": {result}}), 200
+    except asyncio.TimeoutError:
+        return jsonify({'error': 'Timeout waiting for result'}), 504
+    finally:
+        # Clean up after response or timeout
+        pending_requests.pop(request_id, None)
 
 if __name__ == '__main__':
     ip = sys.argv[1] 
