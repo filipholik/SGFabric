@@ -7,6 +7,7 @@ IOL_NORTHBOUND_IP='127.0.0.1'
 IOL_NORTHBOUND_PORT=5000
 
 # Startup of the IOL 
+echo "Starting up the IOL broker"
 cd IOL/
 ./iol_broker.py $IOL_NORTHBOUND_IP $IOL_NORTHBOUND_PORT 
 

@@ -175,26 +175,41 @@ def get_status():
 def refresh_asset_discovery():    
     return json.dumps(list(storage.connected_devices))
 
-@app.get("/install")
-def install_functions():    
-    #storage.CPNControllerApp.install()
-    installThread = Thread(target=install)
-    installThread.start()    
-    #return loading_bar("Installing functions... ", 100)
-    
-    #return '<h1> All functions installed... <br/> <a href="http://127.0.0.1:5000/index"> Back </a> </h1>'
-    #return json.dumps(list(storage.connected_devices))
+@app.route('/install', methods=['POST'])
+def install_function():    
+    try: 
+        data = request.get_json()  # Parse raw JSON body
+        print(f"Received request: {data}")
+        #return jsonify({"status": "success", "data" : data}), 200
+        dpid = data.get("dpid")
+        index = data.get("index")
+        function_name = data.get("function_name")
+        print(f"Installation request received, dpid: {dpid}, index: {index}, function_name: {function_name}")
+        return install(dpid, index, function_name)
+        
+    except Exception as e:
+        print(f"Error installing the function {e}")
+        return jsonify({'error': f'Error installing the function {e}'}), 500
 
-def install(): 
-    with open('../functions/forwarding.o', 'rb') as f:
-        print("Installing forwarding services...")
-        elf = f.read() # Otherwise if read 9x - not enough data for ELF header error
-        storage.connections[1].send(FunctionAddRequest(name="learningswitch", index=1, elf=elf)) # DSS1                
-        #time.sleep(1)    
-        print("Function installed...")   
-        # return         
-        storage.status["functions"] = ("Function installed")
-        storage.log[str(datetime.datetime.now())] = "Function installed sucessfully"
+def install(dpid, index, function_name): 
+    with open(f'../functions/{function_name}.o', 'rb') as f:
+        print(f"Installing {function_name} function...")
+        elf = f.read() 
+        if(int(dpid) in storage.connections):                         
+            storage.connections[int(dpid)].send(FunctionAddRequest(name=function_name, index=int(index), elf=elf))              
+            #time.sleep(1)    
+            print("Function installed...")                      
+            storage.status["functions"] = (f"Function {function_name} installed at index {index} and DPID {dpid}")
+            storage.log[str(datetime.datetime.now())] = f"Function {function_name} installed at index {index} and DPID {dpid}"
+            return jsonify({"status": "success", "description" : "Function was installed successfully"}), 200
+        else:
+            return jsonify({"status": "failed", "description" : "No device with this DPID"}), 500
+    return jsonify({"status": "failed", "description" : "Cannot read the file"}), 500
+            
+
+        
+
+        
 
 if __name__ == '__main__':
     ip = sys.argv[1] 
