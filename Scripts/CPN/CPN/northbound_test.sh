@@ -53,11 +53,27 @@ curl -X GET "http://127.0.0.1:5000/status"
 
 echo
 sleep 5 & sleep_pid=$!
-spin $sleep_pid "Testing the /install API"
+spin $sleep_pid "Testing the /install API - monitoring function"
 wait $sleep_pid
 curl -X POST "http://127.0.0.1:5000/install" \
   -H "Content-Type: application/json" \
-  -d '{"dpid": "1", "index": "0", "function_name": "forwarding"}'
+  -d '{"dpid": "1", "index": "0", "function_name": "monitoring"}'
+
+echo
+sleep 5 & sleep_pid=$!
+spin $sleep_pid "Testing the /install API - forwarding function"
+wait $sleep_pid
+curl -X POST "http://127.0.0.1:5000/install" \
+  -H "Content-Type: application/json" \
+  -d '{"dpid": "1", "index": "1", "function_name": "forwarding"}'
+
+echo
+sleep 5 & sleep_pid=$!
+spin $sleep_pid "Testing the /read API"
+wait $sleep_pid
+curl -X POST "http://127.0.0.1:5000/read" \
+  -H "Content-Type: application/json" \
+  -d '{"dpid": "1", "index": "0", "name": "monitor"}'
 
 echo
 sleep 5 & sleep_pid=$!
@@ -66,5 +82,14 @@ wait $sleep_pid
 curl -X POST "http://127.0.0.1:5000/remove" \
   -H "Content-Type: application/json" \
   -d '{"dpid": "1", "index": "0"}'
+curl -X POST "http://127.0.0.1:5000/remove" \
+  -H "Content-Type: application/json" \
+  -d '{"dpid": "1", "index": "1"}'
 
+sleep 5 & sleep_pid=$!
+spin $sleep_pid "Testing the /status API"
+wait $sleep_pid
+curl -X GET "http://127.0.0.1:5000/status"
+
+echo
 echo "Testing finished" 

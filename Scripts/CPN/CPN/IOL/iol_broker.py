@@ -228,7 +228,17 @@ def remove(dpid, index):
         storage.log[str(datetime.datetime.now())] = f"Function removed from index {index} and DPID {dpid}"
         return jsonify({"status": "success", "description" : "Function was removed successfully"}), 200
     else:
-        return jsonify({"status": "failed", "description" : "No device with this DPID"}), 500    
+        return jsonify({"status": "failed", "description" : "No device with this DPID"}), 500   
+
+@app.route('/read', methods=['POST'])
+def read_function():   
+    data = request.get_json()  # Parse raw JSON body
+    print(f"Received read request: {data}")
+    dpid = data.get("dpid")
+    index = data.get("index")
+    name = data.get("name") # monitor
+    # TODO
+    return jsonify({"status": "success", "data" : data}), 200
 
 if __name__ == '__main__':
     ip = sys.argv[1] 
