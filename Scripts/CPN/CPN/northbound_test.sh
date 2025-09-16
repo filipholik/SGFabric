@@ -17,7 +17,7 @@ spin() {
     printf "\r%s Done!    \n" "$message"
 }
 
-# echo "Testing the /status API"
+echo
 sleep 5 & sleep_pid=$!
 spin $sleep_pid "Testing the /status API"
 wait $sleep_pid
@@ -41,7 +41,23 @@ curl -X POST "http://127.0.0.1:5000/install" \
 
 echo
 sleep 5 & sleep_pid=$!
-spin $sleep_pid "Testing the /read API"
+spin $sleep_pid "Testing the /read API 1. "
+wait $sleep_pid
+curl -X POST "http://127.0.0.1:5000/read" \
+  -H "Content-Type: application/json" \
+  -d '{"dpid": "1", "index": "0", "name": "monitor"}'
+
+echo
+sleep 5 & sleep_pid=$!
+spin $sleep_pid "Testing the /read API 2. "
+wait $sleep_pid
+curl -X POST "http://127.0.0.1:5000/read" \
+  -H "Content-Type: application/json" \
+  -d '{"dpid": "1", "index": "0", "name": "monitor"}'
+
+echo
+sleep 5 & sleep_pid=$!
+spin $sleep_pid "Testing the /read API 3. "
 wait $sleep_pid
 curl -X POST "http://127.0.0.1:5000/read" \
   -H "Content-Type: application/json" \
@@ -58,6 +74,7 @@ curl -X POST "http://127.0.0.1:5000/remove" \
   -H "Content-Type: application/json" \
   -d '{"dpid": "1", "index": "1"}'
 
+echo
 sleep 5 & sleep_pid=$!
 spin $sleep_pid "Testing the /status API"
 wait $sleep_pid

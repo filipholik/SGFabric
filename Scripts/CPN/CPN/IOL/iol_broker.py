@@ -50,7 +50,7 @@ class CPNController(eBPFCoreApplication):
         value_bytes = int.from_bytes(bytes.fromhex(str(value.hex())[:8]), byteorder="little") 
         value_packets = int.from_bytes(bytes.fromhex(str(value.hex())[-8:]), byteorder="little")
         #print(str(value_packets) + "," + str(value_bytes))
-        return str(value_packets) + "," + str(value_bytes)
+        return str(value_packets) + " packets, " + str(value_bytes) + " bytes"
 
     @set_event_handler(Header.TABLES_LIST_REPLY)
     def tables_list_reply(self, connection, pkt):
@@ -65,24 +65,24 @@ class CPNController(eBPFCoreApplication):
         item_size = pkt.entry.key_size + pkt.entry.value_size
         fmt = "{}s{}s".format(pkt.entry.key_size, pkt.entry.value_size)
 
-        result = ""
+        #result = ""
 
         for i in range(pkt.n_items):
             key, value = struct.unpack_from(fmt, pkt.items, i * item_size)
             #entries.append((key.hex(), value.hex()))   
             valStr = self.get_str_values(value)
-            bytesTotal = valStr.split(",",1)[1]
-            if key not in storage.monitoring: 
-                storage.monitoring[key] = 0 
+            #bytesTotal = valStr.split(",",1)[1]
+            if str(key.hex()) not in storage.monitoring: 
+                storage.monitoring[str(key.hex())] = 0 
 
-            storage.monitoring[key] = str(timestamp) + ":" + str(key.hex()) + ":" + str(bytesTotal) + " bytes \n "
-            result += str(storage.monitoring[key])
-            print(f"\n Read request processed: {storage.monitoring[key]}")
+            storage.monitoring[str(key.hex())] = str(timestamp) + ": " + valStr + " \n "
+            #result += str(storage.monitoring[key])
+            print(f"\n Read request processed: {str(key.hex())}: {storage.monitoring[str(key.hex())]}")
 
-        request_id = connection.dpid        
-        future = pending_requests.get(request_id)
-        if future and not future.done():
-            future.set_result(result)
+        #request_id = connection.dpid        
+        #future = pending_requests.get(request_id)
+        #if future and not future.done():
+        #    future.set_result(result)
 
 
     @set_event_handler(Header.TABLE_ENTRY_GET_REPLY)
@@ -208,25 +208,29 @@ def read_function():
     storage.connections[int(dpid)].send(TableListRequest(index=int(index), table_name=name))
     print("Sending southbound read request...")
 
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    future = loop.create_future()
-    request_id = int(dpid) 
+
+
+    return jsonify(storage.monitoring), 200
+
+    #try:
+    #    loop = asyncio.get_running_loop()
+    #except RuntimeError:
+    #    loop = asyncio.new_event_loop()
+    #    asyncio.set_event_loop(loop)
+    #future = loop.create_future()
+    #request_id = int(dpid) 
     # Save the future so it can be completed by the handler later
-    pending_requests[request_id] = future
+    #pending_requests[request_id] = future
     
-    try:
-        result = loop.run_until_complete(asyncio.wait_for(future, timeout=2))
-        return jsonify(result), 200
-        #return jsonify({f"status": "success", "data": {result}}), 200
-    except asyncio.TimeoutError:
-        return jsonify({'error': 'Timeout waiting for result'}), 504
-    finally:
-        # Clean up after response or timeout
-        pending_requests.pop(request_id, None)
+    #try:
+    #    result = loop.run_until_complete(asyncio.wait_for(future, timeout=2))
+    #    return jsonify(result), 200
+    #return jsonify({f"status": "success", "data": {result}}), 200
+    #except asyncio.TimeoutError:
+    #return jsonify({'error': 'Timeout waiting for result'}), 504
+    #finally:
+    #    Clean up after response or timeout
+    #    pending_requests.pop(request_id, None)
 
 if __name__ == '__main__':
     ip = sys.argv[1] 
