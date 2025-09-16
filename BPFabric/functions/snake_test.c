@@ -3,7 +3,7 @@
 
 uint64_t prog(struct packet *pkt)
 {
-    // If the packet is from the IDS (port 0) drop it
+    // One-way
     if (pkt->metadata.in_port == 0) 
     {
         return PORT + 1; 
@@ -17,6 +17,22 @@ uint64_t prog(struct packet *pkt)
     if (pkt->metadata.in_port == 4) 
     {
         return PORT + 5; 
+    } 
+
+    // Return traffic
+    if (pkt->metadata.in_port == 5) 
+    {
+        return PORT + 4; 
+    }    
+
+    if (pkt->metadata.in_port == 3) 
+    {
+        return PORT + 2; 
+    } 
+
+    if (pkt->metadata.in_port == 1) 
+    {
+        return PORT; 
     } 
 
     return DROP;
