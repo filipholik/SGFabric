@@ -6,8 +6,8 @@
 DPID=1
 IOL_SOUTHBOUND_IP='127.0.0.1'
 IOL_SOUTHBOUND_PORT='9000'
-INTERFACES_LIST='enp1s0 enp2s0 enp3s0 enp4s0' # Check with ifconfig
-#INTERFACES_LIST='enp0s3 enp0s8' # VM testing version
+#INTERFACES_LIST='enp1s0 enp2s0 enp3s0 enp4s0' # Check with ifconfig
+INTERFACES_LIST='enp0s3 enp0s8' # VM testing version
 SOFTSWITCH=1 #Set to 0 for DPDK 
 
 # Debug 
