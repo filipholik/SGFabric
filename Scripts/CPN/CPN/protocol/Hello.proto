@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message Hello {
-    uint32 version = 1;
-    uint64 dpid = 2;
-}
