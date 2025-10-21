@@ -29,6 +29,10 @@ dpdk-devbind.py --bind=vfio-pci 0000:02:00.0
 cd /home/cpn/BPFabric/dpdkswitch/build/
 sudo ./bpfabric -l 0-1 -n 4 -- -q 1 -p 3 -d 1 -c 127.0.0.1:9000
 
+Running six ports: 
+-p 3F
+00111111 = 63 dec = 3F in hex 
+
 //--- CLI
 1 add 0 learningswitch ../examples/learningswitch.o
 
