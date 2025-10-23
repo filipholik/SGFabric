@@ -17,3 +17,8 @@ otsentry@otsentry
 
 DPDK error - ldconfig
 
+Devices: 
+1) Protectli: Skye, Mull 
+2) Rouafwit: Arran
+3) 4-Ports: Tiree, Barra
+
