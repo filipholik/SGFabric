@@ -1,0 +1,16 @@
+SSH setup 
+On H1, generate an SSH key (if you don’t already have one)
+ssh-keygen -t ed25519 -C "switch_test" -N "" -f ~/.ssh/id_ed25519
+
+This creates:
+~/.ssh/id_ed25519         # private key
+~/.ssh/id_ed25519.pub     # public key
+
+Copy the public key to H2, run:
+ssh-copy-id user2@10.0.0.2
+
+Then type your password once — it will install the key into:
+/home/user2/.ssh/authorized_keys
+
+Test it, try:
+ssh user2@10.0.0.2
