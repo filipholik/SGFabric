@@ -14,3 +14,7 @@ Then type your password once — it will install the key into:
 
 Test it, try:
 ssh user2@10.0.0.2
+
+Prerequizites 
+sudo apt update
+sudo apt install -y netsniff-ng ethtool jq bc
