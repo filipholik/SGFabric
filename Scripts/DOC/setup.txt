@@ -30,6 +30,7 @@ cd /home/cpn/BPFabric/dpdkswitch/build/
 sudo ./bpfabric -l 0-1 -n 4 -- -q 1 -p 3 -d 1 -c 127.0.0.1:9000
 
 Running six ports: 
+sudo ./bpfabric -l 0-11 -n 12 -- -q 1 -p 3F -d 1 -c 127.0.0.1:9000
 -p 3F
 00111111 = 63 dec = 3F in hex 
 
