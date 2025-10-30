@@ -3,6 +3,9 @@ https://github.com/UofG-netlab/BPFabric/wiki/Running%20BPFabric
 //--- IP addressing 
 sudo ifconfig enp1s0 10.0.0.1 netmask 255.255.255.0
 
+//--- Linux Forwarding 
+sudo sysctl -w net.ipv4.ip_forward=1
+
 //--- Softswitch
 sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0
 
