@@ -72,6 +72,14 @@ sudo ip link set dev enp3s0 up
 sudo ovs-vsctl set-controller br0 tcp:192.168.10.1:6633
 (the switch is configured with 192.168.10.2) 
 
+Setup the rules manually (snake test example): 
+sudo ovs-ofctl add-flow br0 in_port=1,actions=output:2
+sudo ovs-ofctl add-flow br0 in_port=2,actions=output:1
+sudo ovs-ofctl add-flow br0 in_port=3,actions=output:4
+sudo ovs-ofctl add-flow br0 in_port=4,actions=output:3
+sudo ovs-ofctl add-flow br0 in_port=5,actions=output:6
+sudo ovs-ofctl add-flow br0 in_port=6,actions=output:5
+
 Check flows: 
 sudo ovs-ofctl dump-flows br0
 
