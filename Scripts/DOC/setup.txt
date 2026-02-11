@@ -1,9 +1,13 @@
 //--- Installation 
 PROTECTLI Ubuntu install error: disable WiFi first 
 
-DPDK installation - follow the Wiki
-Meson build fails: 
+DPDK installation - do not follow the Wiki! 
+Just use: 
+apt-get install dpdk dpdk-dev 
+
+If manually using the Wiki, issues with meson build fails: 
 apt-get install python3-pyelftools libnuma-dev 
+Plus an issue with the wrong path
 
 https://github.com/UofG-netlab/BPFabric/wiki/Running%20BPFabric
 
