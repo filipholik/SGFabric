@@ -1,3 +1,10 @@
+//--- Installation 
+PROTECTLI Ubuntu install error: disable WiFi first 
+
+DPDK installation - follow the Wiki
+Meson build fails: 
+apt-get install python3-pyelftools libnuma-dev 
+
 https://github.com/UofG-netlab/BPFabric/wiki/Running%20BPFabric
 
 //--- IP addressing 
