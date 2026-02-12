@@ -11,7 +11,7 @@ Dashboard requires Gradient Able Flask.
 # Installation
 BPFabric:  
 apt-get install gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted clang make  
-git clone https://github.com/UofG-netlab/BPFabric 
+git clone https://github.com/UofG-netlab/BPFabric  
 cd BPFabric  
 make   
 
