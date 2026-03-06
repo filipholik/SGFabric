@@ -202,3 +202,8 @@ iperf -s -u
 //Copy
 scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
 scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
+
+//TCP Replay
+sudo tcpreplay --intf1 DSS1GW-eth1 --loop=100 --pps=100 FileName.pcapng
+sudo tcpreplay --intf1 DSS1GW-eth1 --loop=100 --mbps=1 FileName.pcapng
+
