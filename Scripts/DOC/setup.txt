@@ -1,4 +1,4 @@
-//--- Installation 
+//--- Installation ---
 PROTECTLI Ubuntu install error: disable WiFi first 
 
 DPDK installation - do not follow the Wiki! 
@@ -11,19 +11,19 @@ Plus an issue with the wrong path
 
 https://github.com/UofG-netlab/BPFabric/wiki/Running%20BPFabric
 
-//--- IP addressing 
+//--- IP addressing ---
 sudo ifconfig enp1s0 10.0.0.1 netmask 255.255.255.0
 
-//--- Linux Forwarding 
+//--- Linux Forwarding ---
 sudo sysctl -w net.ipv4.ip_forward=1
 
-//--- Softswitch
+//--- Softswitch ---
 sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0
 
-// --- Controller
+// --- Controller ---
  ~/BPFabric/controller/cli.py
 
-//--- DPDK
+//--- DPDK ---
 sudo -i
 echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 cat /proc/meminfo
@@ -51,10 +51,10 @@ sudo ./bpfabric -l 0-11 -n 12 -- -q 1 -p 3F -d 1 -c 127.0.0.1:9000
 -p 3F
 00111111 = 63 dec = 3F in hex 
 
-//--- CLI
+//--- CLI ---
 1 add 0 learningswitch ../examples/learningswitch.o
 
-//--- Dashboard
+//--- Dashboard ---
 cd ~/BPFabric/controller/
 ./service_broker.py
 
@@ -62,14 +62,14 @@ cd ~/Dashboard/
 source env/bin/activate
 flask run
 
-//--- Close DPDK
+//--- Close DPDK ---
 dpdk-devbind.py --unbind 0000:01:00.0
 dpdk-devbind.py --unbind 0000:02:00.0
 
-//--- Experiment
+//--- Experiment ---
 ethstats -n 2
 
-//--- Open vSwitch
+//--- Open vSwitch ---
 sudo ovs-vsctl show
 ip link show
 
@@ -94,7 +94,7 @@ sudo ovs-ofctl add-flow br0 in_port=6,actions=output:5
 Check flows: 
 sudo ovs-ofctl dump-flows br0
 
-//--- RYU SDN Controller
+//--- RYU SDN Controller ---
 pyenv activate ryu
 cd /home/otsentry/ryu/ryu/app/
 ryu-manager fdi_switch.py
@@ -102,7 +102,7 @@ ryu-manager fdi_switch.py
 
 More details about installation: https://heltale.com/sdn/setting_up_ryu/ 
 
-//--- 2 switches
+//--- 2 switches ---
 S1: 
 sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --promiscuous enp1s0 enp2s0 enp5s0
 
@@ -112,7 +112,7 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=2 --controller="192.168.1.1:9000" -
 1 add 0 learningswitch ../examples/learningswitch.o
 2 add 0 learningswitch ../examples/learningswitch.o
 
-//--- GOOSE Encryption Experiment
+//--- GOOSE Encryption Experiment ---
 sudo ip link add veth1 type veth peer name veth2
 sudo ip link add veth3 type veth peer name veth4
 
@@ -141,7 +141,7 @@ sudo apt install cmake
 https://doc.libsodium.org/installation
 sudo ln -s /usr/local/lib/libsodium.so.23.3.0 /usr/lib/libsodium.so.23
 
-//--- XDP 
+//--- XDP ---
 //Compile
 clang -O2 -target bpf -c xdp_wire.c -o xdp_wire.o
 
@@ -177,33 +177,41 @@ sudo ~/BPFabric/softswitch/softswitch --dpid=1 --controller="127.0.0.1:9000" --t
 1 add 0 grappa_tap ../functions/grappa_tap.o
 1 add 1 forwarding ../functions/forwarding.o
 
-//--- RP commands
+//--- RP commands ---
 //Login
 ssh bpfabric@10.0.0.1
 ssh netlab@10.0.0.2
 
-//GOOSE
+// GOOSE
 cd Documents/comlib_dps/sgdevices/IED_GOOSE/
 ./ied_goose
 
-//PTPD config
+// PTPD config
 sudo ptpd -M -i eth0
 sudo ptpd -s -i eth0
 sudo date --set="May 02 10:10:00 2025"
 date
 
-//Link limit
+// Link limit
 sudo ethtool -s enp2s0 speed 100 duplex full
 
-//iPerf settings 
+// iPerf settings 
 iperf -c 10.0.0.1 -u -b 25M -l 124 -t 120
 iperf -s -u
 
-//Copy
+// Copy
 scp netlab@10.0.0.2:/home/netlab/Documents/goose_rec.pcap .\Documents\
 scp bpfabric@10.0.0.1:/home/bpfabric/Documents/goose_send.pcap .\Documents\
 
-//TCP Replay
+// TCP Replay
 sudo tcpreplay --intf1 DSS1GW-eth1 --loop=100 --pps=100 FileName.pcapng
 sudo tcpreplay --intf1 DSS1GW-eth1 --loop=100 --mbps=1 FileName.pcapng
+
+//--- Miscellaneous ---
+
+// Counting instructions in a compiled eBPF object file
+llvm-objdump -d block.o | grep -P '^\s+[0-9a-f]+:' | wc -l
+(requires sudo apt install llvm)
+
+
 
