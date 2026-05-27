@@ -1,4 +1,4 @@
-/*--- DOCKER VERSION (OK) --- */ 
+/*--- DOCKER VERSION INSTALLATION (OK) --- */ 
 //Remove old versions 
 sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)
 
@@ -37,6 +37,97 @@ polycubectl connect br1:enp1s0 enp1s0
 polycubectl br1 ports add enp2s0 peer=enp2s0
 polycubectl br1 show
 
+/*--- SNAKE CONFIG --- */
+//Allow promisc
+sudo ip link set enp1s0 promisc on
+sudo ip link set enp2s0 promisc on
+sudo ip link set enp3s0 promisc on
+sudo ip link set enp4s0 promisc on
+sudo ip link set enp5s0 promisc on
+sudo ip link set enp6s0 promisc on
+
+//Polycube
+//Choose the type: XDP_DRV / XDP_SKB / TC
+polycubectl simplebridge add br0 type=XDP_DRV
+polycubectl simplebridge add br1 type=XDP_DRV
+polycubectl simplebridge add br2 type=XDP_DRV
+
+polycubectl simplebridge br0 ports add port1 peer=enp1s0
+polycubectl simplebridge br0 ports add port2 peer=enp2s0
+polycubectl simplebridge br1 ports add port1 peer=enp3s0
+polycubectl simplebridge br1 ports add port2 peer=enp4s0
+polycubectl simplebridge br2 ports add port1 peer=enp5s0
+polycubectl simplebridge br2 ports add port2 peer=enp6s0
+
+polycubectl br0 show
+polycubectl simplebridge br0 ports show
+sudo bpftool net list
+xdp:
+enp1s0(2) driver id 804
+enp2s0(3) driver id 808
+enp3s0(4) driver id 809
+enp4s0(5) driver id 813
+enp5s0(6) driver id 814
+enp6s0(7) driver id 818
+pcn_xdp_cp(43) generic id 800
+
+tc:
+pcn_tc_cp(42) clsact/ingress pcn_tc_cp id 799
+
+flow_dissector:
+
+netfilter:
+
+//MANUALLY DELETE! 
+sudo bpftool net list
+sudo ip link set dev enp1s0 xdp off
+sudo ip link set dev enp2s0 xdp off
+sudo ip link set dev enp3s0 xdp off
+sudo ip link set dev enp4s0 xdp off
+sudo ip link set dev enp5s0 xdp off
+sudo ip link set dev enp6s0 xdp off
+sudo bpftool net list
+
+//NOTE: DRV mode will silently fail: 
+sudo bpftool net list
+xdp:
+pcn_xdp_cp(17) generic id 707
+tc:
+pcn_tc_cp(16) clsact/ingress pcn_tc_cp id 706
+flow_dissector:
+netfilter:
+
+//XDP GENERIC
+polycubectl simplebridge add br0 type=XDP_SKB
+
+/*--- TSHOOT ---*/
+//mq root qdisc -> clsact root qdisc (required by Polycube) 
+sudo ip link set enp1s0 down
+sudo ip link set enp2s0 down
+
+sudo tc qdisc del dev enp1s0 root 2>/dev/null
+sudo tc qdisc del dev enp2s0 root 2>/dev/null
+
+sudo ip link set enp1s0 up
+sudo ip link set enp2s0 up
+
+sudo tc qdisc del dev enp1s0 root
+sudo tc qdisc del dev enp2s0 root
+
+/*--- POLICY BASED FORWARDER --- */
+//Doesn't work with XDP, TC only :( 
+//Otherwise something like: 
+polycubectl pbf rule add 0 inport=0 action=forward outport=1
+polycubectl pbf rule add 1 inport=2 action=forward outport=3
+polycubectl pbf rule add 2 inport=4 action=forward outport=5
+
+polycubectl pbf rule add 3 inport=5 action=forward outport=4
+polycubectl pbf rule add 4 inport=3 action=forward outport=2
+polycubectl pbf rule add 5 inport=1 action=forward outport=0
+
+//Add
+polycubectl snake add s1
+
 /*--- BARE METAL INSTALLATION (FAILED) --- */ 
 //Note: Failed on old libraries 
 git clone https://github.com/polycube-network/polycube
@@ -45,3 +136,40 @@ git submodule update --init --recursive
 ./scripts/install.sh (DO NOT RUN AS SUDO!)
 
 sudo apt update && sudo apt install golang
+
+/*--- DEVELOPMENT --- */
+//IMPORTANT: Requires all the dev tools! 
+//Shared ~/polycube folder: 
+sudo docker run  -it --rm --privileged --network host -v ~/polycube:/workspace/polycube -v /lib/modules:/lib/modules:ro -v /usr/src:/usr/src:ro -v /etc/localtime:/etc/localtime:ro polycubenets/polycube:latest /bin/bash -c 'polycubed -d && /bin/bash'
+
+//In the host machine: 
+sudo apt install -y \
+  cmake \
+  make \
+  g++ \
+  clang \
+  llvm \
+  pkg-config \
+  libelf-dev \
+  zlib1g-dev \
+  libssl-dev \
+  flex \
+  bison
+
+cd ~/polycube/src/services/pcn-snake
+mkdir -p build
+cd build
+cmake ..
+make -j$(nproc)
+  
+//OR rebuild inside the container
+cd /workspace/polycube/
+mkdir -p build
+cd build
+cmake ..
+make -j$(nproc)
+make install
+
+//AND Restart
+pkill polycubed
+polycubed -d
