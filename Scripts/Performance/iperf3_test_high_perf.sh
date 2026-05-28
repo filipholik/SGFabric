@@ -2,6 +2,11 @@
 # Automated switch performance test using iperf3
 # Run this on the CLIENT side. Make sure iperf3 server is running on the target host.
 
+# IMPORTANT: Requires socket buffers setting on both server and client! 
+# sudo sysctl -w net.core.wmem_max=268435456
+# sudo sysctl -w net.core.rmem_max=268435456
+# sudo sysctl -w net.core.netdev_max_backlog=250000
+
 SERVER_IP="10.0.0.1"
 BANDWIDTH="2.5G"
 DURATION=60
